@@ -56,7 +56,7 @@ function update() {
 function draw() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     ctx.drawImage(drumImg, 0, 0, canvas.width, canvas.height);
-    ctx.fillStyle = "red";
+    ctx.fillStyle = "#D2242A";
     notes.forEach(note => {
         ctx.beginPath();
         ctx.arc(note.x, note.y, noteRadius, 0, Math.PI * 2);
