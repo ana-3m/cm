@@ -1,8 +1,4 @@
-/*NOTAS: como é teste basta que cliques na nota em cima da bateria  -> depois metemos na zona certa... teoriccamente é só ifs
-         está num layout estranho pq estava a recriar a tela do telemovel sem programar responsividade :')
-         mas pelos teus storyboards tenho de mudar o layout depois hahahah
-         
-         pelo menos temos alguma coisa por onde começar ig x)) */
+/*NOTAS: */
 
 const canvas = document.getElementById("gameCanvas");
 const ctx = canvas.getContext("2d");
@@ -16,15 +12,15 @@ window.addEventListener("resize", resizeCanvas);
 resizeCanvas();
 
 let notes = [];
-const laneX = [canvas.width * 0.15, canvas.width * 0.28,
-canvas.width * 0.37, canvas.width * 0.45, canvas.width * 0.52,
-canvas.width * 0.66, canvas.width * 0.80]; // Posições X de notas
-const laneY = [canvas.height * 0.30, canvas.height * 0.30,
-canvas.height * 0.30, canvas.height * 0.30, canvas.height * 0.30,
-canvas.height * 0.30, canvas.height * 0.30]; // Posições Y de notas
+const laneX = [canvas.width * 0.15, canvas.width * 0.275,
+canvas.width * 0.365, canvas.width * 0.45, canvas.width * 0.515,
+canvas.width * 0.66, canvas.width * 0.79]; // Posições X de notas
+const laneY = [canvas.height * 0.67, canvas.height * 0.31,
+canvas.height * 0.76, canvas.height * 0.45, canvas.height * 0.65,
+canvas.height * 0.76, canvas.height * 0.33]; // Posições Y de notas
 
 const minRadius = 1;
-const maxRadius = [150, 100, 100, 100, 100, 100, 100];
+const maxRadius = [155, 180, 133, 117, 50, 130, 225];
 const growthRate = 0.5;
 let score = 0;
 let lives = 10;
@@ -96,12 +92,12 @@ canvas.addEventListener("click", (e) => {
 });
 
 function updateUI() {
-    if (lost && lives !== 0) {
+    /*if (lost && lives !== 0) {
         alert("NOT QUITE MY TEMPO! Lives: " + lives);
     } else if (lives <= 0) {
         alert("Game Over! Pontuação: " + score);
         location.reload();
-    }
+    }*/
 }
 
 setInterval(spawnNote, 1000);
