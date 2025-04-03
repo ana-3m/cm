@@ -1,8 +1,4 @@
-/*NOTAS: como é teste basta que cliques na nota em cima da bateria  -> depois metemos na zona certa... teoriccamente é só ifs
-         está num layout estranho pq estava a recriar a tela do telemovel sem programar responsividade :')
-         mas pelos teus storyboards tenho de mudar o layout depois hahahah
-         
-         pelo menos temos alguma coisa por onde começar ig x)) */
+/*NOTAS: */
 
 const canvas = document.getElementById("gameCanvas");
 const ctx = canvas.getContext("2d");
@@ -19,8 +15,8 @@ let notes = [];
 const laneX = [canvas.width*0.15, canvas.width*0.28,
      canvas.width*0.37, canvas.width*0.45, canvas.width*0.52, 
      canvas.width*0.66, canvas.width*0.80]; // Posições das colunas de notas
-const noteRadius = 20;
-const speed = 1;
+const noteRadius = 50;
+const speed = 3;
 let score = 0;
 let lives = 10;
 
@@ -34,32 +30,35 @@ drumImg.onload = () => {
 
 function spawnNote() {
     const lane = Math.floor(Math.random() * laneX.length);
-    notes.push({ x: laneX[lane], y: 0, lane: lane });
+    notes.push({ x: laneX[lane], y: laneY[lane], radius: minRadius, lane: lane });
 }
 
 let lost = false;
 function update() {
-    notes.forEach(note => note.y += speed);
+    notes.forEach(note => {
+        note.radius += growthRate;
+    });
+
     notes = notes.filter(note => {
-        if (note.y > canvas.height) {
+        if (note.radius >= maxRadius[note.lane]) {
             lives--;
             lost = true;
             updateUI();
-            return false;
+            return false; // Remove a nota se crescer demais
         }
-        //lost = false;
+        lost = false;
         return true;
     });
-        
 }
 
 function draw() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     ctx.drawImage(drumImg, 0, 0, canvas.width, canvas.height);
+
     ctx.fillStyle = "#D2242A";
     notes.forEach(note => {
         ctx.beginPath();
-        ctx.arc(note.x, note.y, noteRadius, 0, Math.PI * 2);
+        ctx.arc(note.x, note.y, note.radius, 0, Math.PI * 2);
         ctx.fill();
     });
 }
@@ -74,27 +73,27 @@ canvas.addEventListener("click", (e) => {
     const rect = canvas.getBoundingClientRect();
     const clickX = e.clientX - rect.left;
     const clickY = e.clientY - rect.top;
-    notes.forEach((note, index) => {
+
+    for (let i = notes.length - 1; i >= 0; i--) { // Percorre de trás para frente
+        const note = notes[i];
         const dist = Math.sqrt((clickX - note.x) ** 2 + (clickY - note.y) ** 2);
-        if (dist <= noteRadius) {
-            notes.splice(index, 1);
+        if (dist <= note.radius) {
+            notes.splice(i, 1); // Remove a nota corretamente
             score++;
             updateUI();
+            break; // Garante que apenas uma nota é removida por clique
         }
-    });
+    }
 });
 
 function updateUI() {
-    let livesNow;
-    //document.getElementById("score").innerText = score;
-    //document.getElementById("lives").innerText = lives;
-    if (lost && lives != 0) {
+    /*if (lost && lives !== 0) {
         alert("NOT QUITE MY TEMPO! Lives: " + lives);
     } else if (lives <= 0) {
         alert("Game Over! Pontuação: " + score);
         location.reload();
-    }
+    }*/
 }
 
 setInterval(spawnNote, 1000);
-gameLoop();
+gameLoop();         
