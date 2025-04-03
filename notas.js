@@ -19,8 +19,8 @@ let notes = [];
 const laneX = [canvas.width*0.15, canvas.width*0.28,
      canvas.width*0.37, canvas.width*0.45, canvas.width*0.52, 
      canvas.width*0.66, canvas.width*0.80]; // Posições das colunas de notas
-const noteRadius = 50;
-const speed = 3;
+const noteRadius = 20;
+const speed = 1;
 let score = 0;
 let lives = 10;
 
