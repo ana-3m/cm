@@ -1,4 +1,4 @@
-const canvas = document.createElement("canvas");
+const canvas = document.getElementById("gameCanvas");
 const ctx = canvas.getContext("2d");
 const drumImg = new Image();
 drumImg.src = "img/drumSet2.png"; // Make sure this path is correct
@@ -6,9 +6,12 @@ drumImg.src = "img/drumSet2.png"; // Make sure this path is correct
 let greenSquares = [];
 
 drumImg.onload = () => {
-    canvas.width = drumImg.width;
-    canvas.height = drumImg.height;
-    ctx.drawImage(drumImg, 0, 0);
+    document.documentElement.requestFullscreen();
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+    drumImg.width = canvas.width;
+    drumImg.height = canvas.height;
+    ctx.drawImage(drumImg, 0, 0, canvas.width, canvas.height);
     detectGreenSquares();
     drawCircles();
 };
@@ -50,4 +53,3 @@ function getGreenSquares() {
 // Export function to be used in other scripts
 window.getGreenSquares = getGreenSquares;
 document.body.appendChild(canvas); // Append canvas to the body
-canvas.style.position = "absolute"; // Position the canvas absolutely
