@@ -1,18 +1,32 @@
 <!DOCTYPE html>
 <html lang="pt">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Whiplash Drum Game</title>
     <style>
-        body { text-align: center; font-family: Arial, sans-serif; }
-        canvas { background: #EDD3A3; display: block; margin: auto; }
+        body {
+            text-align: center;
+            font-family: Arial, sans-serif;
+            margin: 0;
+            overflow: hidden;
+        }
+
+        canvas {
+            background: #EDD3A3;
+            display: block;
+            margin: auto;
+        }
     </style>
 </head>
+
 <body>
     <!--  <h1>Whiplash Drum Game</h1>
     <p>Pontos: <span id="score">0</span> | Vidas: <span id="lives">10</span></p>  -->
     <canvas id="gameCanvas"></canvas>
+    <script src="detetor.js"></script>
     <script src="notas.js"></script>
 </body>
+
 </html>

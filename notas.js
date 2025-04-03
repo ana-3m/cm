@@ -26,16 +26,16 @@ let lives = 10;
 
 // Carregar imagem da bateria
 const drumImg = new Image();
-drumImg.src = "img/drums.png";
+drumImg.src = "img/drumSet2.png";
 
 drumImg.onload = () => {
     draw();
 };
 
-function spawnNote() {
+/*function spawnNote() {
     const lane = Math.floor(Math.random() * laneX.length);
     notes.push({ x: laneX[lane], y: 0, lane: lane });
-}
+}*/
 
 let lost = false;
 function update() {
