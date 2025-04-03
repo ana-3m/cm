@@ -6,11 +6,16 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Whiplash Drum Game</title>
     <style>
+        ::-webkit-scrollbar {
+            display: none;
+        }
+
         body {
             text-align: center;
             font-family: Arial, sans-serif;
             margin: 0;
-            overflow: hidden;
+            overflow-x: hidden;
+
         }
 
         canvas {
@@ -25,10 +30,9 @@
     <!--  <h1>Whiplash Drum Game</h1>
     <p>Pontos: <span id="score">0</span> | Vidas: <span id="lives">10</span></p>  -->
     <canvas id="gameCanvas"></canvas>
-    <script src="detetor.js"></script>
-    <link rel="manifest" href="manifest.json">
 
-    <!-- <script src="notas.js"></script> -->
+<script type="module" src="detetor.js"></script>
+<script type="module" src="notas.js"></script>
 </body>
 
 </html>

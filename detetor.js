@@ -1,22 +1,16 @@
 const canvas = document.getElementById("gameCanvas");
 const ctx = canvas.getContext("2d");
 const drumImg = new Image();
-drumImg.src = "img/drumSet2.png"; // Make sure this path is correct
+drumImg.src = "img/drumSet2.png";
 
 let greenSquares = [];
 
 drumImg.onload = () => {
-    document.documentElement.requestFullscreen();
-    canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight;
-    drumImg.width = canvas.width;
-    drumImg.height = canvas.height;
     ctx.drawImage(drumImg, 0, 0, canvas.width, canvas.height);
-    detectGreenSquares();
-    drawCircles();
+    detectGreen();
 };
 
-function detectGreenSquares() {
+function detectGreen() {
     const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
     const data = imageData.data;
 
@@ -25,31 +19,22 @@ function detectGreenSquares() {
         const g = data[i + 1];
         const b = data[i + 2];
 
-        // Detect green pixels (adjust threshold as needed)
-        if (g > 150 && r < 100 && b < 100) {
+        // Detect green squares
+        if (g > 200 && r < 100 && b < 100) {
             const x = (i / 4) % canvas.width;
             const y = Math.floor((i / 4) / canvas.width);
             greenSquares.push({ x, y });
         }
     }
 
-    console.log("Detected green squares:", greenSquares);
+    console.log("Detected:", greenSquares, "green squares.");
 }
 
-function drawCircles() {
-    ctx.fillStyle = "red";
-    greenSquares.forEach(square => {
-        ctx.beginPath();
-        ctx.arc(square.x, square.y, 10, 0, Math.PI * 2);
-        ctx.fill();
-    });
-}
-
-// Function to get the positions of green squares
-function getGreenSquares() {
+// Export the green squares
+export function getGreenSquares() {
     return greenSquares;
 }
 
-// Export function to be used in other scripts
-window.getGreenSquares = getGreenSquares;
-document.body.appendChild(canvas); // Append canvas to the body
+export function drumImgWifi(){
+    return drumImg;
+}
