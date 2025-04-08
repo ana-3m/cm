@@ -35,6 +35,3 @@ export function getGreenSquares() {
     return greenSquares;
 }
 
-export function drumImgWifi(){
-    return drumImg;
-}
