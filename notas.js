@@ -15,17 +15,15 @@ window.addEventListener("resize", resizeCanvas);
 resizeCanvas();
 
 
-// Wait for green squares to be detected
-let greenSquares = [];
-const maxRadius = 30; // Maximum radius for the circles
-const growthRate = 0.5; // Rate at which the radius grows
+let greenSquares = []; //Array para guardar a loc dos quadrados verdes
+const maxRadius = 40; // Raio máximo dos círculos
+const growthRate = 0.75; // Taxa de crescimento dos círculos
 
 function initializeGreenSquares() {
     greenSquares = getGreenSquares().map(square => ({ ...square, radius: 0 }));
 }
 
 function update() {
-    // Grow the radius of each circle until it reaches maxRadius
     greenSquares.forEach(square => {
         if (square.radius < maxRadius) {
             square.radius += growthRate;
@@ -36,7 +34,7 @@ function update() {
 function draw() {
     ctx.drawImage(drumSet, 0, 0, innerWidth, innerHeight);
     ctx.fillStyle = "red";
-    // Draw growing circles
+    // Desenhar os círculos verdes a crescer
    greenSquares.forEach(square => {
         ctx.beginPath();
         ctx.arc(square.x, square.y, square.radius, 0, Math.PI * 2);

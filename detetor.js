@@ -6,7 +6,7 @@ drumImg.src = "img/drumSet2.png";
 let greenSquares = [];
 
 drumImg.onload = () => {
-    ctx.drawImage(drumImg, 0, 0, canvas.width, canvas.height);
+    ctx.drawImage(drumImg, 0, 0, innerWidth, innerHeight);
     detectGreen();
 };
 
