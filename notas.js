@@ -5,6 +5,7 @@ let mudar;
 const drumSet = new Image();
 drumSet.src = "img/drumSetDisplay.png";
 
+
 const canvas = document.getElementById("gameCanvas");
 const ctx = canvas.getContext("2d");
 
@@ -48,6 +49,7 @@ async function draw() {
     ctx.drawImage(drumSet, 0, 0, innerWidth, innerHeight);
     ctx.fillStyle = "red";
     // Desenhar os círculos vermelhos a crescer
+
     //let random = await getRandomInt(0, greenSquares.length - 1);
     if(mudar) {
         numCirc = await getRandomInt(0, greenSquares.length - 1);
@@ -58,6 +60,8 @@ async function draw() {
     ctx.beginPath();
     ctx.arc(greenSquares[numCirc].x, greenSquares[numCirc].y, greenSquares[numCirc].radius, 0, Math.PI * 2);
     ctx.fill();
+
+
 }
 
 function gameLoop() {
