@@ -34,7 +34,7 @@ function update() {
 function draw() {
     ctx.drawImage(drumSet, 0, 0, innerWidth, innerHeight);
     ctx.fillStyle = "red";
-    // Desenhar os círculos verdes a crescer
+    // Desenhar os círculos vermelhos a crescer
    greenSquares.forEach(square => {
         ctx.beginPath();
         ctx.arc(square.x, square.y, square.radius, 0, Math.PI * 2);
