@@ -3,6 +3,7 @@ import { getGreenSquares } from './detetor.js';
 const drumSet = new Image();
 drumSet.src = "img/drumSetDisplay.png";
 
+
 const canvas = document.getElementById("gameCanvas");
 const ctx = canvas.getContext("2d");
 
@@ -38,6 +39,7 @@ function draw() {
    greenSquares.forEach(square => {
         ctx.beginPath();
         ctx.arc(square.x, square.y, square.radius, 0, Math.PI * 2);
+
         ctx.fill();
     });
 }
