@@ -3,24 +3,34 @@ import { getGreenSquares } from './detetor.js';
 let numCirc; //Variavel com o numero do círculo a ser desenhado
 let mudar;
 const drumSet = new Image();
-drumSet.src = "img/drumSetDisplay.png";
-
+drumSet.src = "img/drumSetDisplay1.png";
 
 const canvas = document.getElementById("gameCanvas");
+canvas.classList.add("hidden");
 const ctx = canvas.getContext("2d");
 
 
+
 function resizeCanvas() {
-    canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight;
+    const aspectRatio = drumSet.width / drumSet.height;
+
+
+    // If the height exceeds the window height, adjust the width instead
+
+        canvas.height = window.innerHeight;
+        canvas.width = canvas.height * aspectRatio;
 }
 
 window.addEventListener("resize", resizeCanvas);
 resizeCanvas();
 
 
-canvas.addEventListener("touchstart",(event) => { 
-    if (calculateDistance(event.touches[0].clientX, event.touches[0].clientY, greenSquares[numCirc].x, greenSquares[numCirc].y) < greenSquares[numCirc].radius) {
+canvas.addEventListener("click", (event) => {
+    const rect = canvas.getBoundingClientRect();
+    const mouseX = event.clientX - rect.left;
+    const mouseY = event.clientY - rect.top;
+
+    if (calculateDistance(mouseX, mouseY, greenSquares[numCirc].x, greenSquares[numCirc].y) < greenSquares[numCirc].radius) {
         console.log("Clicked on circle", numCirc);
         mudar = true;
     }
@@ -40,24 +50,30 @@ function update() {
     greenSquares.forEach(square => {
         if (square.radius < maxRadius) {
             square.radius += growthRate;
-        }
+        } 
     });
 }
 
 async function draw() {
     console.log(greenSquares);
+    ctx.filter = "drop-shadow( 0px -3px 0px rgba(29, 29, 29, 0.28))";
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
     ctx.drawImage(drumSet, 0, 0, innerWidth, innerHeight);
+
     ctx.fillStyle = "red";
     // Desenhar os círculos vermelhos a crescer
 
     //let random = await getRandomInt(0, greenSquares.length - 1);
-    if(mudar) {
+    if (mudar) {
         numCirc = await getRandomInt(0, greenSquares.length - 1);
         console.log("I am inside the click function", numCirc);
+        greenSquares[numCirc].radius = 0; // Reiniciar o raio do círculo
         mudar = false;
     }
     console.log(numCirc);
+    ctx.filter="none";
     ctx.beginPath();
+    
     ctx.arc(greenSquares[numCirc].x, greenSquares[numCirc].y, greenSquares[numCirc].radius, 0, Math.PI * 2);
     ctx.fill();
 
@@ -82,8 +98,11 @@ function calculateDistance(x1, y1, x2, y2) {
 
 
 
+
+
 // Initialize green squares after a short delay to ensure detection is complete
 setTimeout(() => {
     initializeGreenSquares();
+    canvas.classList.remove("hidden");
     gameLoop();
 }, 500);

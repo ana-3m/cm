@@ -1,7 +1,7 @@
 const canvas = document.getElementById("gameCanvas");
 const ctx = canvas.getContext("2d");
 const drumImg = new Image();
-drumImg.src = "img/drumSet2.png";
+drumImg.src = "img/detetorGrande.png";
 
 let greenSquares = [];
 
