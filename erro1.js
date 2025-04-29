@@ -5,59 +5,157 @@ const ctx = canvas.getContext("2d");
 canvas.width = window.innerWidth;
 canvas.height = window.innerHeight;
 
-// Load the "vareta" image
+// Load images
 const varetaImg = new Image();
 varetaImg.src = "img/vareta.png";
-
-// Load the "broken screen" image
 const brokenScreenImg = new Image();
 brokenScreenImg.src = "img/brokenScreen.png";
 
-// Initial position, rotation, and speed
+// Vareta properties
 let vareta = {
-    x: canvas.width / 2, // Start in the middle of the screen
-    y: 0,                // Start at the top of the screen
-    angle: 0,            // Initial rotation angle
-    speedY: 5,           // Vertical speed
-    rotationSpeed: 5     // Rotation speed (degrees per frame)
+    x: canvas.width / 2,
+    y: 0,
+    angle: 0,
+    speedY: 5,
+    rotationSpeed: 5
 };
 
-let animationStopped = false; // Flag to check if the animation has stopped
+let animationStopped = false;
+let flickerTimeout;
+let lastFlickerTime = 0;
+let flickerIntensity = 0; // 0-1 how bad the damage is
 
-// Animate the "vareta"
 function animateVareta() {
-    ctx.clearRect(0, 0, canvas.width, canvas.height); // Clear the canvas
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
 
     if (!animationStopped) {
-        // Update position and rotation
-        vareta.y += vareta.speedY; // Move down
-        vareta.angle += vareta.rotationSpeed; // Rotate
+        vareta.y += vareta.speedY;
+        vareta.angle += vareta.rotationSpeed;
 
-        // Draw the "vareta" image
-        ctx.save(); // Save the current canvas state
-        ctx.translate(vareta.x, vareta.y); // Move the canvas origin to the "vareta" position
-        ctx.rotate((vareta.angle * Math.PI) / 180); // Rotate the canvas
-        ctx.drawImage(varetaImg, -varetaImg.width / 4, -varetaImg.height / 4); // Draw the image centered
-        ctx.restore(); // Restore the canvas state
+        ctx.save();
+        ctx.translate(vareta.x, vareta.y);
+        ctx.rotate((vareta.angle * Math.PI) / 180);
+        ctx.drawImage(varetaImg, -varetaImg.width / 4, -varetaImg.height / 4);
+        ctx.restore();
 
-        // Stop the animation when the "vareta" leaves the screen
         if (vareta.y >= canvas.height) {
-            console.log("Vareta animation stopped.");
-            animationStopped = true; // Set the flag to stop the animation
-        } else {
-            requestAnimationFrame(animateVareta); // Continue the animation
+            animationStopped = true;
+            flickerIntensity = 0.3; // Initial damage
+            scheduleFlicker();
         }
+        
+        requestAnimationFrame(animateVareta);
     } else {
-        // Display the "broken screen" image
-        console.log("Drawing broken screen image.");
-        ctx.clearRect(0, 0, canvas.width, canvas.height); // Clear the canvas
-        ctx.drawImage(brokenScreenImg, 0, 0, canvas.width, canvas.height); // Draw the broken screen image
+        drawBrokenScreen();
     }
 }
 
-// Start the animation when both images are loaded
+function scheduleFlicker() {
+    // Random interval (50-300ms) for more natural effect
+    const delay = 50 + Math.random() * 250;
+    
+    // Gradually increase damage up to 0.8 (never fully 1.0)
+    flickerIntensity = Math.min(0.8, flickerIntensity + 0.01);
+    
+    flickerTimeout = setTimeout(() => {
+        applyScreenDamage();
+        scheduleFlicker();
+    }, delay);
+}
+
+function applyScreenDamage() {
+    const now = Date.now();
+    
+    // Occasionally do a longer blackout (1-3 frames)
+    if (Math.random() < 0.1 * flickerIntensity) {
+        for (let i = 0; i < 1 + Math.floor(Math.random() * 3); i++) {
+            setTimeout(() => {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+            }, i * 50);
+        }
+        return;
+    }
+    
+    // Choose random damage type based on intensity
+    const damageType = Math.random();
+    
+    if (damageType < 0.3 * flickerIntensity) {
+        // Full screen flicker
+        ctx.globalAlpha = 0.7 + Math.random() * 0.3;
+        drawBrokenScreen();
+        ctx.globalAlpha = 1.0;
+    } 
+    else if (damageType < 0.6 * flickerIntensity) {
+        // Horizontal split flicker
+        const splitY = canvas.height * Math.random();
+        ctx.drawImage(brokenScreenImg, 
+            0, 0, canvas.width, splitY,
+            0, 0, canvas.width, splitY);
+    }
+    else if (damageType < 0.8 * flickerIntensity) {
+        // Vertical split flicker
+        const splitX = canvas.width * Math.random();
+        ctx.drawImage(brokenScreenImg, 
+            0, 0, splitX, canvas.height,
+            0, 0, splitX, canvas.height);
+    }
+    else {
+        // Random block corruption
+        const blockSize = 50 + Math.random() * 150;
+        const x = Math.random() * (canvas.width - blockSize);
+        const y = Math.random() * (canvas.height - blockSize);
+        
+        // Sometimes add color distortion
+        if (Math.random() < 0.4) {
+            ctx.save();
+            ctx.filter = `hue-rotate(${Math.random() * 360}deg) brightness(${0.7 + Math.random() * 0.6})`;
+            ctx.drawImage(brokenScreenImg, 
+                x, y, blockSize, blockSize,
+                x, y, blockSize, blockSize);
+            ctx.restore();
+        } else {
+            ctx.clearRect(x, y, blockSize, blockSize);
+        }
+    }
+}
+
+function drawBrokenScreen() {
+    // Base broken screen
+    ctx.drawImage(brokenScreenImg, 0, 0, canvas.width, canvas.height);
+    
+    // Add scan lines
+    if (Math.random() < 0.7) {
+        ctx.strokeStyle = 'rgba(0, 0, 0, 0.1)';
+        ctx.lineWidth = 1;
+        for (let y = 0; y < canvas.height; y += 3) {
+            ctx.beginPath();
+            ctx.moveTo(0, y);
+            ctx.lineTo(canvas.width, y);
+            ctx.stroke();
+        }
+    }
+    
+    // Add random noise
+    if (Math.random() < flickerIntensity) {
+        const noiseDensity = flickerIntensity * 0.2;
+        for (let i = 0; i < canvas.width * canvas.height * noiseDensity; i++) {
+            const x = Math.random() * canvas.width;
+            const y = Math.random() * canvas.height;
+            const size = Math.random() * 3;
+            ctx.fillStyle = `hsl(${Math.random() * 360}, 100%, ${Math.random() * 100}%)`;
+            ctx.fillRect(x, y, size, size);
+        }
+    }
+}
+
+// Start animation when images load
 varetaImg.onload = () => {
     brokenScreenImg.onload = () => {
         animateVareta();
     };
 };
+
+// Clean up on exit
+window.addEventListener('beforeunload', () => {
+    clearTimeout(flickerTimeout);
+});
