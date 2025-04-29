@@ -17,11 +17,16 @@ function resizeCanvas() {
 
     // If the height exceeds the window height, adjust the width instead
 
-        canvas.height = window.innerHeight;
-        canvas.width = canvas.height * aspectRatio;
+    canvas.height = window.innerHeight;
+    canvas.width = canvas.height * aspectRatio;
 }
 
 window.addEventListener("resize", resizeCanvas);
+window.addEventListener("load", function () {
+    setTimeout(function () {
+        window.scrollTo(0, 1);
+    }, 0);
+});
 resizeCanvas();
 
 
@@ -50,12 +55,12 @@ function update() {
     greenSquares.forEach(square => {
         if (square.radius < maxRadius) {
             square.radius += growthRate;
-        } 
+        }
     });
 }
 
 async function draw() {
-    console.log(greenSquares);
+   
     ctx.filter = "drop-shadow( 0px -3px 0px rgba(29, 29, 29, 0.28))";
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     ctx.drawImage(drumSet, 0, 0, innerWidth, innerHeight);
@@ -71,9 +76,9 @@ async function draw() {
         mudar = false;
     }
     console.log(numCirc);
-    ctx.filter="none";
+    ctx.filter = "none";
     ctx.beginPath();
-    
+
     ctx.arc(greenSquares[numCirc].x, greenSquares[numCirc].y, greenSquares[numCirc].radius, 0, Math.PI * 2);
     ctx.fill();
 
@@ -95,8 +100,6 @@ async function getRandomInt(min, max) {
 function calculateDistance(x1, y1, x2, y2) {
     return Math.sqrt(Math.pow(x2 - x1, 2) + Math.pow(y2 - y1, 2));
 }
-
-
 
 
 

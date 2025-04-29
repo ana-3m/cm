@@ -3,7 +3,10 @@
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="mobile-web-app-capable" content="yes">
+    <link rel="manifest" href="/manifest.json">
     <title>Whiplash Drum Game</title>
     <style>
         html{
@@ -14,10 +17,11 @@
         }
 
         body {
+            position:absolute;
             text-align: center;
             font-family: Arial, sans-serif;
-            margin: 0;
             overflow-x: hidden;
+            left: 0;
 
         }
         .hidden {
@@ -36,8 +40,9 @@
     <p>Pontos: <span id="score">0</span> | Vidas: <span id="lives">10</span></p>  -->
     <canvas id="gameCanvas"></canvas>
 
-    <script type="module" src="detetor.js"></script>
-    <script type="module" src="notas.js"></script>
+    <!-- <script type="module" src="detetor.js"></script>
+    <script type="module" src="notas.js"></script> -->
+    <script type="module" src="erro1.js"></script>
 </body>
 
 </html>
