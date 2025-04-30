@@ -1,12 +1,14 @@
-const canvas = document.getElementById("gameCanvas");
+const canvas = document.getElementById("gameDetetor");
 const ctx = canvas.getContext("2d");
 const drumImg = new Image();
-drumImg.src = "img/detetorGrande.png";
+drumImg.src = "img/detetorGrande1.png";
 
 let greenSquares = [];
+canvas.width = window.innerWidth;
+canvas.height = window.innerHeight;
 
 drumImg.onload = () => {
-    ctx.drawImage(drumImg, 0, 0, innerWidth, innerHeight);
+    ctx.drawImage(drumImg, 0, 0, canvas.width, canvas.height);
     detectGreen();
 };
 
@@ -26,7 +28,6 @@ function detectGreen() {
             greenSquares.push({ x, y });
         }
     }
-
     console.log("Detected:", greenSquares, "green squares.");
 }
 
