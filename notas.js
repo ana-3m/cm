@@ -41,45 +41,42 @@ function lerp(start, end, t) {
     return start + (end - start) * t;
 }
 
-// Function to gradually change the background color
+function map(value, inMin, inMax, outMin, outMax) {
+    return ((value - inMin) * (outMax - outMin)) / (inMax - inMin) + outMin;
+}
+
+const maxMissedClicks = 25;
+
+
 function checkInactivity() {
     const currentTime = Date.now();
-    const timeDiff = (currentTime - lastInteractionTime) / 1000; // Time difference in seconds
-
-    if (timeDiff > 1) {
-        missedClicks++; // Increment missed clicks
-        console.log(`Missed clicks: ${missedClicks}`);
-
-        // Calculate the gradient toward black
-        const gradientFactor = Math.min(missedClicks / 8, 1); // Cap at 1 (fully black)
-        const red = Math.round(97 - (97 * gradientFactor)); // Gradually reduce red (97 is #613213's red value)
-        const green = Math.round(50 - (50 * gradientFactor)); // Gradually reduce green (50 is #613213's green value)
-        const blue = Math.round(19 - (19 * gradientFactor)); // Gradually reduce blue (19 is #613213's blue value)
-
-        document.body.style.backgroundColor = `rgb(${red}, ${green}, ${blue})`;
-
+    const timeDiff = (currentTime - lastInteractionTime); // Time difference in seconds
+    // Map missedClicks to a range between 0 and 1
+    const lerpFactor = map(missedClicks, 0, maxMissedClicks, 0, 1); // Adjust the range as needed
+    if (timeDiff > 1000) {
+        if(missedClicks < maxMissedClicks) {
+            missedClicks += 0.1; // Increment missed clicks
+        }
         // If 8 consecutive missed interactions, set background to black
-        if (missedClicks >= 20) {
+        if (missedClicks >= maxMissedClicks) {
             triggerErroAnimation(); // Call the error animation function
         }
     } else if (missedClicks > 0) {
         // Gradually decrease missedClicks if the user interacts within the required time
-        missedClicks--;
+        //missedClicks--;
         console.log(`Missed clicks decreasing: ${missedClicks}`);
-
-        // Map missedClicks to a range between 0 and 1
-        const lerpFactor = Math.min(missedClicks / 8, 1); // Cap at 1 (fully darkened)
-
-        // Original color: #613213 (RGB: 97, 50, 19)
-        // Target color: #1E1E1E (RGB: 30, 30, 30)
-        const red = Math.round(lerp(97, 30, lerpFactor));
-        const green = Math.round(lerp(50, 30, lerpFactor));
-        const blue = Math.round(lerp(19, 30, lerpFactor));
-        document.body.style.backgroundColor = `rgb(${red}, ${green}, ${blue})`;
     }
 
+    // Original color: #613213 (RGB: 97, 50, 19)
+    // Target color: #1E1E1E (RGB: 30, 30, 30)
+    const red = Math.round(lerp(97, 30, lerpFactor));
+    const green = Math.round(lerp(50, 30, lerpFactor));
+    const blue = Math.round(lerp(19, 30, lerpFactor));
+    console.log(`Background color: rgb(${red}, ${green}, ${blue})`);
+    document.body.style.backgroundColor = `rgb(${red}, ${green}, ${blue})`;
     // Check again after 100ms
-    setTimeout(checkInactivity, 100);
+    setTimeout(checkInactivity, 10);
+    console.log(`Missed clicks: ${missedClicks}`);
 }
 
 // Reset the inactivity timer on user interaction
@@ -95,6 +92,7 @@ canvas.addEventListener("keydown", resetInactivityTimer);
 // Start checking for inactivity
 checkInactivity();
 
+
 canvas.addEventListener("click", (event) => {
     const rect = canvas.getBoundingClientRect();
     const mouseX = event.clientX - rect.left;
@@ -105,6 +103,9 @@ canvas.addEventListener("click", (event) => {
         mudar = true;
         lastInteractionTime = new Date().getTime(); // Get the current time in milliseconds
     }
+    if (missedClicks > 1) {
+        missedClicks--;
+    } 
     update();
 });
 
