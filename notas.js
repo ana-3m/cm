@@ -1,9 +1,9 @@
 import { getGreenSquares } from './detetor.js';
-import { animateVareta } from './erro1.js';
-
+import { animateVareta } from './erros.js';
+import { showNextMessage } from './messages.js';
 
 let numCirc; // Variável com o número do círculo a ser desenhado
-let mudar;
+let mudar = false; // Variável para controlar a mudança de círculo
 const drumSet = new Image();
 drumSet.src = "img/drumSetDisplay1.png";
 
@@ -26,7 +26,6 @@ function resizeCanvas() {
 }
 
 drumSet.onload = () => {
-    console.log("Image loaded:", drumSet.src);
     resizeCanvas(); // Resize the canvas after the image is loaded
     initializeGreenSquares(); // Initialize green squares
     canvas.classList.remove("hidden"); // Show the canvas
@@ -53,30 +52,22 @@ function checkInactivity() {
     const timeDiff = (currentTime - lastInteractionTime); // Time difference in seconds
     // Map missedClicks to a range between 0 and 1
     const lerpFactor = map(missedClicks, 0, maxMissedClicks, 0, 1); // Adjust the range as needed
-    if (timeDiff > 1000) {
-        if(missedClicks < maxMissedClicks) {
-            missedClicks += 0.1; // Increment missed clicks
-        }
-        // If 8 consecutive missed interactions, set background to black
-        if (missedClicks >= maxMissedClicks) {
+    console.log("Diferença de cliques:", timeDiff);
+    if (timeDiff > 2000) {
+
             triggerErroAnimation(); // Call the error animation function
-        }
-    } else if (missedClicks > 0) {
-        // Gradually decrease missedClicks if the user interacts within the required time
-        //missedClicks--;
-        console.log(`Missed clicks decreasing: ${missedClicks}`);
-    }
+       
+
+    } 
 
     // Original color: #613213 (RGB: 97, 50, 19)
     // Target color: #1E1E1E (RGB: 30, 30, 30)
     const red = Math.round(lerp(97, 30, lerpFactor));
     const green = Math.round(lerp(50, 30, lerpFactor));
-    const blue = Math.round(lerp(19, 30, lerpFactor));
-    console.log(`Background color: rgb(${red}, ${green}, ${blue})`);
+    const blue = Math.round(lerp(19, 30, lerpFactor)); 
     document.body.style.backgroundColor = `rgb(${red}, ${green}, ${blue})`;
     // Check again after 100ms
     setTimeout(checkInactivity, 10);
-    console.log(`Missed clicks: ${missedClicks}`);
 }
 
 // Reset the inactivity timer on user interaction
@@ -85,9 +76,7 @@ function resetInactivityTimer() {
 }
 
 // Add event listeners for user interaction
-canvas.addEventListener("click", resetInactivityTimer);
-canvas.addEventListener("mousemove", resetInactivityTimer);
-canvas.addEventListener("keydown", resetInactivityTimer);
+
 
 // Start checking for inactivity
 checkInactivity();
@@ -97,15 +86,15 @@ canvas.addEventListener("click", (event) => {
     const rect = canvas.getBoundingClientRect();
     const mouseX = event.clientX - rect.left;
     const mouseY = event.clientY - rect.top;
-
+    showNextMessage(); // Call the function to show messages
     if (calculateDistance(mouseX, mouseY, greenSquares[numCirc].x, greenSquares[numCirc].y) < greenSquares[numCirc].radius) {
         console.log("Clicked on circle", numCirc);
         mudar = true;
-        lastInteractionTime = new Date().getTime(); // Get the current time in milliseconds
+        resetInactivityTimer(); // Reset the inactivity timer on successful click
+        if (missedClicks > 1) {
+            missedClicks--;
+        }
     }
-    if (missedClicks > 1) {
-        missedClicks--;
-    } 
     update();
 });
 
@@ -135,15 +124,14 @@ async function draw() {
 
     if (mudar) {
         numCirc = await getRandomInt(0, greenSquares.length - 1);
-        console.log("I am inside the click function", numCirc);
         greenSquares[numCirc].radius = 0; // Reiniciar o raio do círculo
         mudar = false;
     }
-    console.log(numCirc);
     ctx.filter = "none";
     ctx.beginPath();
     ctx.arc(greenSquares[numCirc].x, greenSquares[numCirc].y, greenSquares[numCirc].radius, 0, Math.PI * 2);
     ctx.fill();
+    
 }
 
 function gameLoop() {
@@ -164,7 +152,7 @@ function calculateDistance(x1, y1, x2, y2) {
 function triggerErroAnimation() {
     const erroCanvas = document.getElementById("erro");
     erroCanvas.classList.remove("hidden"); // Ensure the canvas is visible
-    animateVareta(); // Call the animation function from erro1.js
+    animateVareta(false); // Call the animation function from erro1.js
 }
 
 /*canvas.onclick = ()=> {

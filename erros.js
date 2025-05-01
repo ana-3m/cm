@@ -20,33 +20,38 @@ let vareta = {
     rotationSpeed: 3
 };
 
-let animationStopped = false;
 let flickerTimeout;
 let flickerIntensity = 0; // 0-1 how bad the damage is
 
-export function animateVareta() {
-    erro.clearRect(0, 0, canvas.width, canvas.height);
+export function animateVareta(animationStopped) {
 
+    erro.clearRect(0, 0, canvas.width, canvas.height);
+    
     if (!animationStopped) {
         vareta.y += vareta.speedY;
         vareta.angle += vareta.rotationSpeed;
-
         if (vareta.x > canvas.width * 0.15) {
             vareta.x -= vareta.speedY; // Move left
         }
-
         erro.save();
         erro.translate(vareta.x, vareta.y);
         erro.rotate((vareta.angle * Math.PI) / 180);
         erro.drawImage(varetaImg, -varetaImg.width / 4, -varetaImg.height / 4);
         erro.restore();
-
         if (vareta.y >= canvas.height) {
             animationStopped = true;
-            flickerIntensity = 0.3; // Initial damage
+            flickerIntensity = 0.3;
+            vareta = {
+                x: canvas.width / 2,
+                y: 0,
+                angle: 0,
+                speedY: 3,
+                rotationSpeed: 3
+            }; // Reset nas variaveis
             scheduleFlicker();
         }
         requestAnimationFrame(animateVareta);
+        console.log("Animation running", vareta.x, vareta.y, vareta.angle);
     } else {
         drawBrokenScreen();
     }
@@ -66,7 +71,6 @@ function scheduleFlicker() {
 }
 
 function applyScreenDamage() {
-    
     // Occasionally do a longer blackout (1-3 frames)
     if (Math.random() < 0.1 * flickerIntensity) {
         for (let i = 0; i < 1 + Math.floor(Math.random() * 3); i++) {

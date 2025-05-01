@@ -10,6 +10,8 @@ canvas.height = window.innerHeight;
 drumImg.onload = () => {
     ctx.drawImage(drumImg, 0, 0, canvas.width, canvas.height);
     detectGreen();
+
+    canvas.style.display = "none"; 
 };
 
 function detectGreen() {
