@@ -1,4 +1,4 @@
-body{
+body {
     overflow: hidden;
 }
 
@@ -13,7 +13,7 @@ body{
     height: 100%;
     border: 1px solid #333;
     position: absolute;
-    z-index: 3;
+    z-index: 1;
     /* Higher than canvas z-index */
     pointer-events: none;
     /* Allows clicks to pass through to the canvas */
@@ -24,18 +24,19 @@ body{
     justify-content: center;
     align-items: center;
     color: white;
-    font-size: 10vw;
+    font-size: 8vw;
     font-weight: bold;
     height: 78*2px;
     width: 78*2px;
     position: absolute;
-    z-index: 3;
+
     /* Higher than grid-container */
     pointer-events: none;
     /* Allows clicks on the messages */
     transition: opacity 0.3s ease;
     opacity: 0;
 }
-  .char-group[style*="display: block"] {
+
+.char-group[style*="display: block"] {
     opacity: 1;
-  }
+}

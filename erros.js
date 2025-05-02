@@ -22,41 +22,39 @@ let vareta = {
 
 let flickerTimeout;
 let flickerIntensity = 0; // 0-1 how bad the damage is
-
-export async function animateVareta(animationStopped) {
+let animationStopped = false; // Flag to stop the animation
+export async function animateVareta() {
     erro.clearRect(0, 0, canvas.width, canvas.height);
+    // Update vareta's position and angle
+    vareta.y += vareta.speedY;
+    vareta.angle += vareta.rotationSpeed * (Math.PI / 180); // Convert degrees to radians
 
-    
-        // Update vareta's position and angle
-        vareta.y += vareta.speedY;
-        vareta.angle += vareta.rotationSpeed * (Math.PI / 180); // Convert degrees to radians
-
-        // Move vareta left if it hasn't reached the target x position
-        if (vareta.x > canvas.width * 0.10) {
-            vareta.x -= vareta.speedY;
-        }
-
-        // Apply transformations and draw the vareta
-        erro.save();
-        erro.translate(vareta.x, vareta.y); // Move to the vareta's position
-        erro.rotate(vareta.angle); // Rotate the canvas
-        erro.drawImage(varetaImg, varetaImg.width, varetaImg.height); // Draw centered
-        erro.restore();
-
-        // Check if vareta has moved off-screen
-        if (vareta.y >= canvas.height) {
-            animationStopped = await true;
-            console.log("Animation stopped", animationStopped); 
-            flickerIntensity = 0.3; // Start flickering effect
-            scheduleFlicker(); // Start flickering
-        }
-        if (!animationStopped) {
-            // Continue the animation loop
-            requestAnimationFrame(() => animateVareta(false));
-        } else {
-            requestAnimationFrame(() => drawBrokenScreen());
-        }
+    // Move vareta left if it hasn't reached the target x position
+    if (vareta.x > canvas.width * 0.10) {
+        vareta.x -= vareta.speedY;
     }
+
+    // Apply transformations and draw the vareta
+    erro.save();
+    erro.translate(vareta.x, vareta.y); // Move to the vareta's position
+    erro.rotate(vareta.angle); // Rotate the canvas
+    erro.drawImage(varetaImg, varetaImg.width, varetaImg.height); // Draw centered
+    erro.restore();
+
+    // Check if vareta has moved off-screen
+    if (vareta.y >= canvas.height) {
+        animationStopped = await true;
+        console.log("Animation stopped", animationStopped);
+        flickerIntensity = 0.3; // Start flickering effect
+
+    }
+    if (!animationStopped) {
+        // Continue the animation loop
+        requestAnimationFrame(() => animateVareta(false));
+    } else {
+        requestAnimationFrame(() => drawBrokenScreen());
+    }
+}
 
 
 
@@ -72,6 +70,8 @@ function scheduleFlicker() {
         scheduleFlicker();
     }, delay);
 }
+
+
 
 function applyScreenDamage() {
     // Occasionally do a longer blackout (1-3 frames)
@@ -90,13 +90,6 @@ function drawBrokenScreen() {
     erro.drawImage(brokenScreenImg, 0, 0, canvas.width, canvas.height);
 
 }
-
-// Start animation when images load
-varetaImg.onload = () => {
-    brokenScreenImg.onload = () => {
-        animateVareta();
-    };
-};
 
 // Clean up on exit
 window.addEventListener('beforeunload', () => {
