@@ -1,3 +1,7 @@
+body{
+    overflow: hidden;
+}
+
 .grid-container {
     display: grid;
     grid-template-columns: repeat(11, 1fr);
@@ -19,16 +23,19 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    background: #222;
     color: white;
-    font-size: 18px;
-    border: 1px solid #444;
-    border-radius: 6px;
-    height: 78px;
-    width: 78px;
+    font-size: 10vw;
+    font-weight: bold;
+    height: 78*2px;
+    width: 78*2px;
     position: absolute;
-    z-index: 4;
+    z-index: 3;
     /* Higher than grid-container */
-    pointer-events: auto;
+    pointer-events: none;
     /* Allows clicks on the messages */
+    transition: opacity 0.3s ease;
+    opacity: 0;
 }
+  .char-group[style*="display: block"] {
+    opacity: 1;
+  }

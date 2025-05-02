@@ -1,11 +1,12 @@
 import { getGreenSquares } from './detetor.js';
 import { animateVareta } from './erros.js';
-import { showNextMessage } from './messages.js';
+import { showNextMessage } from './js/messages.js';
 
 let numCirc; // Variável com o número do círculo a ser desenhado
 let mudar = false; // Variável para controlar a mudança de círculo
 const drumSet = new Image();
 drumSet.src = "img/drumSetDisplay1.png";
+let lastMessageTime = 0; 
 
 const canvas = document.getElementById("gameCanvas");
 canvas.classList.add("hidden");
@@ -28,8 +29,8 @@ function resizeCanvas() {
 drumSet.onload = () => {
     resizeCanvas(); // Resize the canvas after the image is loaded
     initializeGreenSquares(); // Initialize green squares
-    canvas.classList.remove("hidden"); // Show the canvas
-    gameLoop(); // Start the game loop
+    //canvas.classList.remove("hidden"); // Show the canvas
+    //gameLoop(); // Start the game loop
 };
 
 let lastInteractionTime = Date.now(); // Track the last interaction time
@@ -54,20 +55,19 @@ function checkInactivity() {
     const lerpFactor = map(missedClicks, 0, maxMissedClicks, 0, 1); // Adjust the range as needed
     console.log("Diferença de cliques:", timeDiff);
     if (timeDiff > 2000) {
+        triggerErroAnimation(); // Call the error animation function
+    }
 
-            triggerErroAnimation(); // Call the error animation function
-       
-
-    } 
+    console.log(timeDiff);
 
     // Original color: #613213 (RGB: 97, 50, 19)
     // Target color: #1E1E1E (RGB: 30, 30, 30)
     const red = Math.round(lerp(97, 30, lerpFactor));
     const green = Math.round(lerp(50, 30, lerpFactor));
-    const blue = Math.round(lerp(19, 30, lerpFactor)); 
+    const blue = Math.round(lerp(19, 30, lerpFactor));
     document.body.style.backgroundColor = `rgb(${red}, ${green}, ${blue})`;
     // Check again after 100ms
-    setTimeout(checkInactivity, 10);
+    setTimeout(checkInactivity, 100);
 }
 
 // Reset the inactivity timer on user interaction
@@ -79,47 +79,65 @@ function resetInactivityTimer() {
 
 
 // Start checking for inactivity
-checkInactivity();
-
+//checkInactivity();
+//lastInteractionTime = Date.now(); // Initialize the last interaction time
 
 canvas.addEventListener("click", (event) => {
     const rect = canvas.getBoundingClientRect();
     const mouseX = event.clientX - rect.left;
     const mouseY = event.clientY - rect.top;
-    showNextMessage(); // Call the function to show messages
+
+    // Handle circle click
     if (calculateDistance(mouseX, mouseY, greenSquares[numCirc].x, greenSquares[numCirc].y) < greenSquares[numCirc].radius) {
-        console.log("Clicked on circle", numCirc);
         mudar = true;
-        resetInactivityTimer(); // Reset the inactivity timer on successful click
+        resetInactivityTimer();
         if (missedClicks > 1) {
             missedClicks--;
         }
     }
+
+    // Handle message display (with cooldown)
+    const now = Date.now();
+    if (now - lastMessageTime > 2000) {
+        showNextMessage();
+        lastMessageTime = now;
+        triggerErroAnimation();
+    }
+
     update();
 });
 
 let greenSquares = []; // Array para guardar a loc dos quadrados verdes
-const maxRadius = 25; // Raio máximo dos círculos
-const growthRate = 0.75; // Taxa de crescimento dos círculos
+const maxRadius = 100; // Raio máximo dos círculos
+const growthRate = 1; // Taxa de crescimento dos círculos
 
 async function initializeGreenSquares() {
-    greenSquares = getGreenSquares().map(square => ({ ...square, radius: 0 }));
+    if (greenSquares.length <= 8) {
+        greenSquares = getGreenSquares().map(square => ({
+            x: square.x * (canvas.width / window.innerWidth), // Scale x-coordinate
+            y: square.y * (canvas.height / window.innerHeight), // Scale y-coordinate
+            radius: 0 // Initialize radius
+        }));
+    }
     numCirc = await getRandomInt(0, greenSquares.length - 1);
 }
 
 function update() {
     greenSquares.forEach(square => {
         if (square.radius < maxRadius) {
-            square.radius += growthRate;
+            square.radius += growthRate; // Gradually increase the radius
+            
         }
+
+
     });
+
 }
 
 async function draw() {
     ctx.filter = "drop-shadow( 0px -3px 0px rgba(29, 29, 29, 0.28))";
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     ctx.drawImage(drumSet, 0, 0, canvas.width, canvas.height); // Draw the image to fit the canvas
-
     ctx.fillStyle = "red";
 
     if (mudar) {
@@ -131,7 +149,7 @@ async function draw() {
     ctx.beginPath();
     ctx.arc(greenSquares[numCirc].x, greenSquares[numCirc].y, greenSquares[numCirc].radius, 0, Math.PI * 2);
     ctx.fill();
-    
+
 }
 
 function gameLoop() {

@@ -7,7 +7,7 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="mobile-web-app-capable" content="yes">
     <link rel="manifest" href="/manifest.json">
-    <link rel="stylesheet" href="grid.css">
+    <link rel="stylesheet" href="styles/grid.css">
     <title>Whiplash Drum Game</title>
     <style>
         html {
@@ -24,7 +24,7 @@
             position: absolute;
             text-align: center;
             font-family: Arial, sans-serif;
-            
+
             left: 0;
             top: 0;
             margin: 0;
@@ -33,8 +33,8 @@
         .hidden {
             display: none;
         }
-
-        canva,
+        
+        canvas,
         #erro {
             position: absolute;
             margin: auto;
@@ -53,23 +53,24 @@
             z-index: 2;
             pointer-events: none;
         }
+
+    
     </style>
 </head>
 
 <body>
-    <!--  <h1>Whiplash Drum Game</h1>
-    <p>Pontos: <span id="score">0</span> | Vidas: <span id="lives">10</span></p>  -->
+    <!--  <h1>Whiplash Drum Game</h1> -->
 
     <canvas id="gameCanvas"></canvas>
-    <canvas id ="mensagens"> </canvas>
+    <canvas id="mensagens"> </canvas>
     <canvas id="gameDetetor"></canvas>
     <canvas id="erro" class="hidden"></canvas>
+    <canvas id="messageCanvas"></canvas> 
     <div class="grid-container" id="grid"></div>
-    
-    <!-- <script type="module" src="detetor.js"></script>-->
 
-    <script type="module" src="erros.js"></script>
-    <script type="module" src="messages.js"></script>
+
+    <!-- JAVASCRIPT -->
+
     <script type="module" src="notas.js"></script>
 </body>
 

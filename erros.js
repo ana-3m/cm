@@ -14,56 +14,59 @@ brokenScreenImg.src = "img/brokenScreen.png";
 // Vareta properties
 let vareta = {
     x: canvas.width / 2,
-    y: 0,
+    y: -200,
     angle: 0,
-    speedY: 3,
+    speedY: 10,
     rotationSpeed: 3
 };
 
 let flickerTimeout;
 let flickerIntensity = 0; // 0-1 how bad the damage is
 
-export function animateVareta(animationStopped) {
-
+export async function animateVareta(animationStopped) {
     erro.clearRect(0, 0, canvas.width, canvas.height);
+
     
-    if (!animationStopped) {
+        // Update vareta's position and angle
         vareta.y += vareta.speedY;
-        vareta.angle += vareta.rotationSpeed;
-        if (vareta.x > canvas.width * 0.15) {
-            vareta.x -= vareta.speedY; // Move left
+        vareta.angle += vareta.rotationSpeed * (Math.PI / 180); // Convert degrees to radians
+
+        // Move vareta left if it hasn't reached the target x position
+        if (vareta.x > canvas.width * 0.10) {
+            vareta.x -= vareta.speedY;
         }
+
+        // Apply transformations and draw the vareta
         erro.save();
-        erro.translate(vareta.x, vareta.y);
-        erro.rotate((vareta.angle * Math.PI) / 180);
-        erro.drawImage(varetaImg, -varetaImg.width / 4, -varetaImg.height / 4);
+        erro.translate(vareta.x, vareta.y); // Move to the vareta's position
+        erro.rotate(vareta.angle); // Rotate the canvas
+        erro.drawImage(varetaImg, varetaImg.width, varetaImg.height); // Draw centered
         erro.restore();
+
+        // Check if vareta has moved off-screen
         if (vareta.y >= canvas.height) {
-            animationStopped = true;
-            flickerIntensity = 0.3;
-            vareta = {
-                x: canvas.width / 2,
-                y: 0,
-                angle: 0,
-                speedY: 3,
-                rotationSpeed: 3
-            }; // Reset nas variaveis
-            scheduleFlicker();
+            animationStopped = await true;
+            console.log("Animation stopped", animationStopped); 
+            flickerIntensity = 0.3; // Start flickering effect
+            scheduleFlicker(); // Start flickering
         }
-        requestAnimationFrame(animateVareta);
-        console.log("Animation running", vareta.x, vareta.y, vareta.angle);
-    } else {
-        drawBrokenScreen();
+        if (!animationStopped) {
+            // Continue the animation loop
+            requestAnimationFrame(() => animateVareta(false));
+        } else {
+            requestAnimationFrame(() => drawBrokenScreen());
+        }
     }
-}
+
+
 
 function scheduleFlicker() {
     // Random interval (50-300ms) for more natural effect
     const delay = 50 + Math.random() * 250;
-    
+
     // Gradually increase damage up to 0.8 (never fully 1.0)
     flickerIntensity = Math.min(0.8, flickerIntensity + 0.01);
-    
+
     flickerTimeout = setTimeout(() => {
         applyScreenDamage();
         scheduleFlicker();
@@ -85,7 +88,7 @@ function applyScreenDamage() {
 function drawBrokenScreen() {
     // Base broken screen
     erro.drawImage(brokenScreenImg, 0, 0, canvas.width, canvas.height);
-    
+
 }
 
 // Start animation when images load
