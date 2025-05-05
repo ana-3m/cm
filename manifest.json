@@ -1,13 +1,10 @@
 {
-  "name": "My Web App",
-  "short_name": "WebApp",
-  "start_url": "/index.html",
-  "icons": [
-    {
-      "src": "/icon.png",
-      "sizes": "192x192",
-      "type": "image/png"
-    }
-  ],
-  "display": "minimal-ui"
+    "name": "Whiplash",
+    "short_name": "Narrative",
+    "start_url": "/index.html",
+    "scope": "/",
+    "display": "standalone",
+    "background_color": "#ffffff",
+    "theme_color": "#000000"
+
 }

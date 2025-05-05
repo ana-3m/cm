@@ -1,0 +1,42 @@
+body {
+    overflow: hidden;
+}
+
+.grid-container {
+    display: grid;
+    grid-template-columns: repeat(11, 1fr);
+    grid-template-rows: repeat(5, 1fr);
+    gap: 0px;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    border: 1px solid #333;
+    position: absolute;
+    z-index: 1;
+    /* Higher than canvas z-index */
+    pointer-events: none;
+    /* Allows clicks to pass through to the canvas */
+}
+
+.char-group {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: white;
+    font-size: 8vw;
+    font-weight: bold;
+    height: 78*2px;
+    width: 78*2px;
+    position: absolute;
+
+    /* Higher than grid-container */
+    pointer-events: none;
+    /* Allows clicks on the messages */
+    transition: opacity 0.3s ease;
+    opacity: 0;
+}
+
+.char-group[style*="display: block"] {
+    opacity: 1;
+}

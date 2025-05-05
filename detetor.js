@@ -1,18 +1,25 @@
-const canvas = document.getElementById("gameCanvas");
+const canvas = document.getElementById("gameDetetor");
 const ctx = canvas.getContext("2d");
 const drumImg = new Image();
-drumImg.src = "img/drumSet2.png";
+drumImg.src = "img/detetorGrande1.png";
 
 let greenSquares = [];
+canvas.width = window.innerWidth;
+canvas.height = window.innerHeight;
 
 drumImg.onload = () => {
-    ctx.drawImage(drumImg, 0, 0, innerWidth, innerHeight);
+    ctx.drawImage(drumImg, 0, 0, canvas.width, canvas.height);
     detectGreen();
+
+    canvas.style.display = "none"; 
 };
 
 function detectGreen() {
     const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
     const data = imageData.data;
+
+    const cellSize = 15; // Define the size of each "square" to group pixels
+    const uniqueSquares = new Set(); // Use a Set to store unique locations
 
     for (let i = 0; i < data.length; i += 4) {
         const r = data[i];
@@ -23,11 +30,11 @@ function detectGreen() {
         if (g > 200 && r < 100 && b < 100) {
             const x = (i / 4) % canvas.width;
             const y = Math.floor((i / 4) / canvas.width);
-            greenSquares.push({ x, y });
+                greenSquares.push({ x, y });
+            }
         }
-    }
-
-    console.log("Detected:", greenSquares, "green squares.");
+    
+    
 }
 
 // Export the green squares
