@@ -1,4 +1,6 @@
-const messages = [
+//Ficheiro responsável por criar as mensagens que aparecem no jogo 
+
+export const messages = [
   {
     id: "Encouragement",
     parts: [
@@ -9,8 +11,8 @@ const messages = [
   {
     id: "Reprimend",
     parts: [
-      { text: "TOO", col: 6, row: 4 },
-      { text: "SLOW", col: 8, row: 5 }
+      { text: "TOO", col: 1, row: 1 },
+      { text: "SLOW", col: 9, row: 1 }
     ]
   },
   {
@@ -23,7 +25,8 @@ const messages = [
     id: "Reprimend",
     parts: [
       { text: "YOU", col: 1, row: 2 },
-      { text: "EVEN TRYING?", col: 5, row: 5 }
+      { text: "EVEN TRYING", col: 5, row: 5 },
+      {text:"?", col: 11, row: 3}
     ]
   },
   {
@@ -66,18 +69,16 @@ const messages = [
 // DOM elements
 const grid = document.getElementById('grid');
 const messageElements = new Map(); // Using Map for efficient lookup
-let currentIndex = 0;
-let messageTimeoutId = null;
 
-// Initialize only the elements we actually need
+//Criação da grelha 
 function initializeElements() {
-  // Clear existing elements
+ // Elimina os elementos existentes
   while (grid.firstChild) {
     grid.removeChild(grid.firstChild);
   }
   messageElements.clear();
 
-  // Collect all unique positions from all messages
+  // Recolhe todas as posições únicas que sao necessárias para as frases
   const allPositions = new Set();
   messages.forEach(message => {
     message.parts.forEach(part => {
@@ -85,7 +86,6 @@ function initializeElements() {
     });
   });
 
-  // Create only the elements we need
   allPositions.forEach(position => {
     const [col, row] = position.split(',').map(Number);
     const div = document.createElement('div');
@@ -98,60 +98,27 @@ function initializeElements() {
   });
 }
 
-// Initialize immediately
 initializeElements();
 
-export function showNextMessage() {
-  // Clear previous timeout
-  if (messageTimeoutId) {
-    clearTimeout(messageTimeoutId);
-  }
-
-  // Hide all elements
-  messageElements.forEach(element => {
-    element.style.display = 'none';
-  });
-
-  const currentMessage = messages[currentIndex];
-
-  // Display each part at its specified position
-  currentMessage.parts.forEach(part => {
-    const positionKey = `${part.col},${part.row}`;
-    const element = messageElements.get(positionKey);
-    if (element) {
-      element.textContent = part.text;
-      element.style.display = 'block';
-    }
-  });
-
-  // Move to next message
-  currentIndex = (currentIndex + 1) % messages.length;
-
-  // Schedule next message
-  messageTimeoutId = setTimeout(showNextMessage, 5000);
-}
 
 export function getMessagesById(id) {
   return messages.filter(message => message.id === id);
 }
 
-// Function to show a specific message by index
+// Função para mostrar a mensagem com base mo índice
 export function showMessageByIndex(index) {
   if (index < 0 || index >= messages.length) return;
+  if (index === null) return; // Check if index is null
 
-  // Clear previous timeout
-  if (messageTimeoutId) {
-    clearTimeout(messageTimeoutId);
-  }
 
-  // Hide all elements
+  //Esconde todas os elementos
   messageElements.forEach(element => {
     element.style.display = 'none';
   });
 
   const currentMessage = messages[index];
 
-  // Display each part at its specified position
+  //Mostrar a mensagem atual
   currentMessage.parts.forEach(part => {
     const positionKey = `${part.col},${part.row}`;
     const element = messageElements.get(positionKey);
@@ -161,12 +128,10 @@ export function showMessageByIndex(index) {
     }
   });
 
-  // Move to next message
-  currentIndex = (index + 1) % messages.length;
-
-  // Schedule next message
-  messageTimeoutId = setTimeout(() => showNextMessage(), 5000);
+  // Esconder a mensagem após 4 segundos
+  setTimeout(() => {
+    messageElements.forEach(element => {
+      element.style.display = 'none'; // Hide all elements
+    });
+  }, 4000); // 4 seconds
 }
-
-// Initial display
-showNextMessage();
