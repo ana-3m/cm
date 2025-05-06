@@ -1,13 +1,18 @@
 import { getGreenSquares } from './detetor.js';
 import { animateVareta } from './erros.js';
-import { showNextMessage, getMessagesById, showMessageByIndex } from './js/messages.js';
+import { getMessagesById, showMessageByIndex } from './js/messages.js';
+import { messages } from './js/messages.js';
+
+const maxRadiusReachedThreshold = 3;
 
 let numCirc;
 let mudar = false;
 const drumSet = new Image();
 drumSet.src = "img/drumSetDisplay1.png";
 let lastMessageTime = 0;
-
+let maxRadiusReached = 0;
+let mudarIndexMessage = true;
+let messageIndex = null;
 const canvas = document.getElementById("gameCanvas");
 canvas.classList.add("hidden");
 const ctx = canvas.getContext("2d");
@@ -28,7 +33,7 @@ drumSet.onload = () => {
     initializeGreenSquares();
 };
 
-let lastInteractionTime = Date.now();
+let lastInteractionTime;
 let missedClicks = 0;
 
 function lerp(start, end, t) {
@@ -39,67 +44,12 @@ function map(value, inMin, inMax, outMin, outMax) {
     return ((value - inMin) * (outMax - outMin)) / (inMax - inMin) + outMin;
 }
 
-const maxMissedClicks = 25;
-
-function checkInactivity() {
-    const currentTime = Date.now();
-    const timeDiff = (currentTime - lastInteractionTime);
-
-    const lerpFactor = map(missedClicks, 0, maxMissedClicks, 0, 1);
-
-    if (timeDiff > 2000) {
-        triggerErroAnimation();
-        const reprimendMessages = getMessagesById("Reprimend");
-        if (reprimendMessages.length > 0) {
-            const randomIndex = Math.floor(Math.random() * reprimendMessages.length);
-            const messageIndex = messages.indexOf(reprimendMessages[randomIndex]);
-            showMessageByIndex(messageIndex);
-        }
-    }
-
-    const red = Math.round(lerp(97, 30, lerpFactor));
-    const green = Math.round(lerp(50, 30, lerpFactor));
-    const blue = Math.round(lerp(19, 30, lerpFactor));
-    document.body.style.backgroundColor = `rgb(${red}, ${green}, ${blue})`;
-
-    setTimeout(checkInactivity, 100);
-}
-
 function resetInactivityTimer() {
     lastInteractionTime = Date.now();
     if (missedClicks > 1) {
         missedClicks--;
-        const encouragementMessages = getMessagesById("Encouragement");
-        if (encouragementMessages.length > 0) {
-            const randomIndex = Math.floor(Math.random() * encouragementMessages.length);
-            const messageIndex = messages.indexOf(encouragementMessages[randomIndex]);
-            showMessageByIndex(messageIndex);
-        }
     }
 }
-
-canvas.addEventListener("click", (event) => {
-    const rect = canvas.getBoundingClientRect();
-    const mouseX = event.clientX - rect.left;
-    const mouseY = event.clientY - rect.top;
-
-    if (calculateDistance(mouseX, mouseY, greenSquares[numCirc].x, greenSquares[numCirc].y) < greenSquares[numCirc].radius) {
-        mudar = true;
-        resetInactivityTimer();
-        if (missedClicks > 1) {
-            missedClicks--;
-        }
-    }
-
-    const now = Date.now();
-    if (now - lastMessageTime > 2000) {
-        showNextMessage();
-        lastMessageTime = now;
-        triggerErroAnimation();
-    }
-
-    update();
-});
 
 let greenSquares = [];
 const maxRadius = 100;
@@ -116,33 +66,82 @@ async function initializeGreenSquares() {
     numCirc = await getRandomInt(0, greenSquares.length - 1);
 }
 
-function update() {
-    greenSquares.forEach(square => {
-        if (square.radius < maxRadius) {
-            square.radius += growthRate;
+let step;
+
+function update(index) {
+    if (greenSquares[index].radius < maxRadius) {
+        step = 0;
+        greenSquares[index].radius += growthRate;
+    } else {
+        switch (step) {
+            case 0:
+                maxRadiusReached++; step++; console.log("step 0"); console.log("max radius", maxRadiusReached); mudarIndexMessage = true; break;
+            case 1: ; break;
         }
-    });
+    }
 }
 
 async function draw() {
-    ctx.filter = "drop-shadow( 0px -3px 0px rgba(29, 29, 29, 0.28))";
+    ctx.filter = "drop-shadow(0px -3px 0px rgba(29, 29, 29, 0.28))";
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     ctx.drawImage(drumSet, 0, 0, canvas.width, canvas.height);
     ctx.fillStyle = "red";
 
     if (mudar) {
         numCirc = await getRandomInt(0, greenSquares.length - 1);
+        if (maxRadiusReached >= maxRadiusReachedThreshold) {
+            maxRadiusReached = 0;
+        };
         greenSquares[numCirc].radius = 0;
         mudar = false;
     }
+
     ctx.filter = "none";
     ctx.beginPath();
     ctx.arc(greenSquares[numCirc].x, greenSquares[numCirc].y, greenSquares[numCirc].radius, 0, Math.PI * 2);
     ctx.fill();
+
+    if (maxRadiusReached >= maxRadiusReachedThreshold) {
+        if (mudarIndexMessage) {
+            const reprimendMessages = getMessagesById("Encouragement");
+            console.log("Im in");
+            if (reprimendMessages.length > 0) {
+                const randomIndex = Math.floor(Math.random() * reprimendMessages.length);
+                messageIndex = messages.indexOf(reprimendMessages[randomIndex]);
+            }
+            mudarIndexMessage = await false;
+            return;
+        }
+        showMessageByIndex(messageIndex);
+    }
+    setTimeout(update(numCirc), 500);
+    console.log();
+    return;
 }
 
+canvas.addEventListener("click", (event) => {
+    const rect = canvas.getBoundingClientRect();
+    const mouseX = event.clientX - rect.left;
+    const mouseY = event.clientY - rect.top;
+
+    if (calculateDistance(mouseX, mouseY, greenSquares[numCirc].x, greenSquares[numCirc].y) < greenSquares[numCirc].radius) {
+        mudar = true;
+        resetInactivityTimer();
+        if (missedClicks > 1) {
+            missedClicks--;
+        } 
+    }
+
+    const now = Date.now();
+    if (now - lastMessageTime > 2000) {
+        lastMessageTime = now;
+        triggerErroAnimation();
+    }
+
+});
+
 function gameLoop() {
-    update();
+
     draw();
     requestAnimationFrame(gameLoop);
 }
