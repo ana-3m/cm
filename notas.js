@@ -3,20 +3,20 @@ import { animateVareta } from './erros.js';
 import { getMessagesById, showMessageByIndex } from './js/messages.js';
 import { messages } from './js/messages.js';
 
-const maxRadiusReachedThreshold = 3;
+const sentenceTrigger = 3;
+const errorTrigger = 6;
 
 let numCirc;
 let mudar = false;
 const drumSet = new Image();
 drumSet.src = "img/drumSetDisplay1.png";
-let lastMessageTime = 0;
 let maxRadiusReached = 0;
 let mudarIndexMessage = true;
 let messageIndex = null;
 const canvas = document.getElementById("gameCanvas");
 canvas.classList.add("hidden");
 const ctx = canvas.getContext("2d");
-
+let switchBubble = false;
 function resizeCanvas() {
     const aspectRatio = drumSet.width / drumSet.height;
     canvas.width = window.innerWidth;
@@ -33,8 +33,6 @@ drumSet.onload = () => {
     initializeGreenSquares();
 };
 
-let lastInteractionTime;
-let missedClicks = 0;
 
 function lerp(start, end, t) {
     return start + (end - start) * t;
@@ -44,12 +42,6 @@ function map(value, inMin, inMax, outMin, outMax) {
     return ((value - inMin) * (outMax - outMin)) / (inMax - inMin) + outMin;
 }
 
-function resetInactivityTimer() {
-    lastInteractionTime = Date.now();
-    if (missedClicks > 1) {
-        missedClicks--;
-    }
-}
 
 let greenSquares = [];
 const maxRadius = 100;
@@ -75,23 +67,45 @@ function update(index) {
     } else {
         switch (step) {
             case 0:
-                maxRadiusReached++; step++; console.log("step 0"); console.log("max radius", maxRadiusReached); mudarIndexMessage = true; break;
-            case 1: ; break;
+                maxRadiusReached++;
+                updateBackgroundColor();
+                step++;
+                console.log("step 0");
+                console.log("max radius", maxRadiusReached);
+                mudarIndexMessage = true;
+                break;
+            case 1: ; switchBubble = true; break;
         }
     }
 }
 
+function lerpColor(color1, color2, t) {
+    const r = Math.round(lerp(color1.r, color2.r, t));
+    const g = Math.round(lerp(color1.g, color2.g, t));
+    const b = Math.round(lerp(color1.b, color2.b, t));
+    return `rgb(${r}, ${g}, ${b})`;
+}
+
+const startColor = { r: 97, g: 50, b: 19 };
+const endColor = { r: 29, g: 28, b: 27 };
+
+function updateBackgroundColor() {
+    const clamped = Math.min(Math.max(maxRadiusReached, 0), 6); // Clamp from 0 to 6
+    const t = map(maxRadiusReached, 0, errorTrigger, 0, 1);
+    const lerpedColor = lerpColor(startColor, endColor, t);
+    document.body.style.backgroundColor = lerpedColor;
+}
+
 async function draw() {
-    ctx.filter = "drop-shadow(0px -3px 0px rgba(29, 29, 29, 0.28))";
+    ctx.filter = "drop-shadow(0px -3px 0px rgba(29, 29, 29, 0.3))";
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     ctx.drawImage(drumSet, 0, 0, canvas.width, canvas.height);
     ctx.fillStyle = "red";
+    switchBubble = false;
 
     if (mudar) {
         numCirc = await getRandomInt(0, greenSquares.length - 1);
-        if (maxRadiusReached >= maxRadiusReachedThreshold) {
-            maxRadiusReached = 0;
-        };
+
         greenSquares[numCirc].radius = 0;
         mudar = false;
     }
@@ -101,7 +115,7 @@ async function draw() {
     ctx.arc(greenSquares[numCirc].x, greenSquares[numCirc].y, greenSquares[numCirc].radius, 0, Math.PI * 2);
     ctx.fill();
 
-    if (maxRadiusReached >= maxRadiusReachedThreshold) {
+    if (maxRadiusReached % sentenceTrigger === 0 && maxRadiusReached > 0) {
         if (mudarIndexMessage) {
             const reprimendMessages = getMessagesById("Encouragement");
             console.log("Im in");
@@ -113,6 +127,11 @@ async function draw() {
             return;
         }
         showMessageByIndex(messageIndex);
+    }
+    if (maxRadiusReached % errorTrigger === 0 && maxRadiusReached > 0) {
+        triggerErroAnimation();
+        maxRadiusReached = 0;
+        mudarIndexMessage = true;
     }
     setTimeout(update(numCirc), 500);
     console.log();
@@ -126,22 +145,13 @@ canvas.addEventListener("click", (event) => {
 
     if (calculateDistance(mouseX, mouseY, greenSquares[numCirc].x, greenSquares[numCirc].y) < greenSquares[numCirc].radius) {
         mudar = true;
-        resetInactivityTimer();
-        if (missedClicks > 1) {
-            missedClicks--;
-        } 
+        if (maxRadiusReached >= 1 && !switchBubble) {
+            maxRadiusReached--;
+        }
     }
-
-    const now = Date.now();
-    if (now - lastMessageTime > 2000) {
-        lastMessageTime = now;
-        triggerErroAnimation();
-    }
-
 });
 
 function gameLoop() {
-
     draw();
     requestAnimationFrame(gameLoop);
 }
