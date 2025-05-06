@@ -2,6 +2,8 @@ import { getGreenSquares } from './detetor.js';
 import { animateVareta } from './erros.js';
 import { getMessagesById, showMessageByIndex } from './js/messages.js';
 import { messages } from './js/messages.js';
+import { drawBlurryScreen } from './newerro.js';
+import { drawPulsingBlur } from './newerro2.js';
 
 const maxRadiusReachedThreshold = 3;
 
@@ -158,7 +160,9 @@ function calculateDistance(x1, y1, x2, y2) {
 function triggerErroAnimation() {
     const erroCanvas = document.getElementById("erro");
     erroCanvas.classList.remove("hidden");
-    animateVareta();
+    // animateVareta();
+    // drawBlurryScreen();
+     drawPulsingBlur();
 }
 
 setTimeout(() => {
