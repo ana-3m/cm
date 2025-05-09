@@ -40,3 +40,10 @@ body {
 .char-group[style*="display: block"] {
     opacity: 1;
 }
+
+.porta{
+    position: absolute;
+    cursor: pointer;
+    z-index: 2;
+}
+

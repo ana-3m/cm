@@ -9,7 +9,6 @@ const errorTrigger = 6;
 let numCirc;
 let mudar = false;
 const drumSet = new Image();
-drumSet.src = "img/drumSetDisplay1.png";
 let maxRadiusReached = 0;
 let mudarIndexMessage = true;
 let messageIndex = null;
@@ -17,6 +16,8 @@ const canvas = document.getElementById("gameCanvas");
 canvas.classList.add("hidden");
 const ctx = canvas.getContext("2d");
 let switchBubble = false;
+let mainRoom = false;
+
 function resizeCanvas() {
     const aspectRatio = drumSet.width / drumSet.height;
     canvas.width = window.innerWidth;
@@ -28,10 +29,15 @@ function resizeCanvas() {
     }
 }
 
-drumSet.onload = () => {
-    resizeCanvas();
-    initializeGreenSquares();
-};
+export async function setDrumImage(src) {
+    drumSet.src = src;
+    console.log(src);
+    if (src == 'img/drumSetDisplay1.png') { mainRoom = await true; }
+    drumSet.onload = () => {
+        resizeCanvas();
+        initializeGreenSquares();
+    };
+}
 
 
 function lerp(start, end, t) {
@@ -44,7 +50,7 @@ function map(value, inMin, inMax, outMin, outMax) {
 
 
 let greenSquares = [];
-const maxRadius = 100;
+const maxRadius = 75;
 const growthRate = 1;
 
 async function initializeGreenSquares() {
@@ -68,7 +74,9 @@ function update(index) {
         switch (step) {
             case 0:
                 maxRadiusReached++;
-                updateBackgroundColor();
+                if (mainRoom) {
+                    updateBackgroundColor();
+                }
                 step++;
                 console.log("step 0");
                 console.log("max radius", maxRadiusReached);
@@ -128,7 +136,7 @@ async function draw() {
         }
         showMessageByIndex(messageIndex);
     }
-    if (maxRadiusReached % errorTrigger === 0 && maxRadiusReached > 0) {
+    if (maxRadiusReached % errorTrigger === 0 && maxRadiusReached > 0 && mainRoom) {
         triggerErroAnimation();
         maxRadiusReached = 0;
         mudarIndexMessage = true;
