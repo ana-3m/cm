@@ -133,5 +133,5 @@ export function showMessageByIndex(index) {
     messageElements.forEach(element => {
       element.style.display = 'none'; // Hide all elements
     });
-  }, 4000); // 4 seconds
+  }, 3000); // 4 seconds
 }

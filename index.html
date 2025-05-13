@@ -53,23 +53,96 @@
             z-index: 2;
             pointer-events: none;
         }
+
+        #leftDoor {
+            left: 1.61vw;
+            top: 23.15vh;
+            width: 9.3vw;
+            height: 71.94vh;
+        }
+
+        #frontDoor {
+            left: 33.01vw;
+            top: 30.56vh;
+            width: 32.6vw;
+            height: 49.35vh;
+        }
+
+        #introVideo {
+            height: 100vh;
+            width: 100vw;
+            z-index: 3;
+            object-fit: cover;
+            top: 0;
+            left: 0;
+        }
     </style>
 </head>
 
 <body>
     <!--  <h1>Whiplash Drum Game</h1> -->
-
-    <canvas id="gameCanvas"></canvas>
-    <canvas id="mensagens"> </canvas>
-    <canvas id="gameDetetor"></canvas>
-    <canvas id="erro" class="hidden"></canvas>
-    <canvas id="messageCanvas"></canvas>
-    <div class="grid-container" id="grid"></div>
+    <div id="intro">
+        <canvas id="introCanvas"></canvas>
+        <div id="leftDoor" class="porta" onclick="leftDoor()"> </div>
+        <div id="frontDoor" class="porta" onclick="frontDoor()"> </div>
+    </div>
+    <div id="game" class="hidden">
+        <video id="introVideo" class="hidden" width="100vw" height="100vh" controls>
+            <source src="tesste.mp4" type="video/mp4">
+        </video>
+        <canvas id="gameCanvas"></canvas>
+        <canvas id="mensagens"> </canvas>
+        <canvas id="gameDetetor"></canvas>
+        <canvas id="erro" class="hidden"></canvas>
+        <canvas id="messageCanvas"></canvas>
+        <div class="grid-container" id="grid"></div>
+    </div>
 
 
     <!-- JAVASCRIPT -->
-
+    <script type="module" src="intro.js"></script>
     <script type="module" src="notas.js"></script>
+    <script type="module">
+        import { setDrumImage } from './notas.js';
+        import { loadDetectorImage } from './detetor.js';
+
+        window.leftDoor = () => {
+            console.log("leftDoor");
+            setDrumImage("img/drumSetPlayfull.png");
+            loadDetectorImage("img/playfulDetector.png");
+            document.getElementById("intro").classList.add("hidden");
+            document.getElementById("game").classList.remove("hidden");
+        };
+
+        window.frontDoor = () => {
+            console.log("frontDoor");
+
+            // Hide the intro and show the game container
+            document.getElementById("intro").classList.add("hidden");
+            document.getElementById("game").classList.remove("hidden");
+
+            // Show the video and hide other elements
+            const video = document.getElementById("introVideo");
+            video.classList.remove("hidden");
+            video.play();
+            video.removeAttribute("controls");
+            // Listen for the video pause event
+            video.addEventListener("pause", () => {
+                // Hide the video and show the drum game
+                // Set the drum image and detector image
+                setDrumImage("img/drumSetDisplay1.png");
+                loadDetectorImage("img/detetorGrande1.png");
+                video.classList.add("hidden");
+                document.getElementById("gameCanvas").classList.remove("hidden");
+                document.getElementById("mensagens").classList.remove("hidden");
+                document.getElementById("gameDetetor").classList.remove("hidden");
+                document.getElementById("erro").classList.remove("hidden");
+                document.getElementById("messageCanvas").classList.remove("hidden");
+                document.getElementById("grid").classList.remove("hidden");
+            });
+        };
+    </script>
+
 </body>
 
 </html>

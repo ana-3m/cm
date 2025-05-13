@@ -4,18 +4,21 @@
 const canvas = document.getElementById("gameDetetor");
 const ctx = canvas.getContext("2d");
 const drumImg = new Image();
-drumImg.src = "img/detetorGrande1.png";
 
 let greenSquares = [];
 canvas.width = window.innerWidth;
 canvas.height = window.innerHeight;
 
-drumImg.onload = () => {
-    ctx.drawImage(drumImg, 0, 0, canvas.width, canvas.height);
-    detectGreen();
+export function loadDetectorImage(imageSrc) {
+    drumImg.src = imageSrc;
 
-    canvas.style.display = "none"; 
-};
+    drumImg.onload = () => {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        ctx.drawImage(drumImg, 0, 0, canvas.width, canvas.height);
+        detectGreen();
+        canvas.style.display = "none";
+    };
+}
 
 //Deteção dos quadrados verdes
 function detectGreen() {
