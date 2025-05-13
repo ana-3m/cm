@@ -67,7 +67,7 @@ async function initializeGreenSquares() {
 let step;
 
 function update(index) {
-    if (greenSquares[index].radius < maxRadius) {
+    if (greenSquares.length > 0 && greenSquares[index].radius < maxRadius ) {
         step = 0;
         greenSquares[index].radius += growthRate;
     } else {
@@ -120,7 +120,9 @@ async function draw() {
 
     ctx.filter = "none";
     ctx.beginPath();
+    if(greenSquares.length > 0){
     ctx.arc(greenSquares[numCirc].x, greenSquares[numCirc].y, greenSquares[numCirc].radius, 0, Math.PI * 2);
+    }
     ctx.fill();
 
     if (maxRadiusReached % sentenceTrigger === 0 && maxRadiusReached > 0) {
