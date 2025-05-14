@@ -37,7 +37,7 @@
         canvas,
         #erro {
             position: absolute;
-            margin:auto;
+            margin: auto;
             top: 0;
             left: 0;
         }
@@ -76,13 +76,14 @@
             top: 0;
             left: 0;
         }
-        #introCanvas{
+
+        #introCanvas {
             position: absolute;
             top: 0;
             left: 0;
             width: 100vw;
             height: 100vh;
-           object-fit: cover;
+            object-fit: cover;
         }
     </style>
 </head>
@@ -111,6 +112,9 @@
     <script type="module" src="intro.js"></script>
     <script type="module" src="notas.js"></script>
     <script type="module">
+        import { resetVareta } from './erros.js';
+        import { resetBlurryScreen } from './newerro.js';
+        import { resetPulsingBlur } from './newerro2.js';
         import { setDrumImage } from './notas.js';
         import { loadDetectorImage } from './detetor.js';
 
@@ -125,21 +129,25 @@
         window.frontDoor = () => {
             console.log("frontDoor");
 
-            // Hide the intro and show the game container
             document.getElementById("intro").classList.add("hidden");
             document.getElementById("game").classList.remove("hidden");
 
-            // Show the video and hide other elements
             const video = document.getElementById("introVideo");
             video.classList.remove("hidden");
             video.play();
             video.removeAttribute("controls");
-            // Listen for the video pause event
-            video.addEventListener("pause", () => {
-                // Hide the video and show the drum game
-                // Set the drum image and detector image
-                setDrumImage("img/drumSetDisplay1.png");
-                loadDetectorImage("img/detetorGrande1.png");
+            document.getElementById("gameCanvas").classList.add("hidden");
+            document.getElementById("mensagens").classList.add("hidden");
+            document.getElementById("gameDetetor").classList.add("hidden");
+            document.getElementById("erro").classList.add("hidden");
+            resetVareta();
+            resetBlurryScreen();
+            resetPulsingBlur();
+
+            document.getElementById("messageCanvas").classList.add("hidden");
+            document.getElementById("grid").classList.add("hidden");
+
+            video.addEventListener("ended", () => {
                 video.classList.add("hidden");
                 document.getElementById("gameCanvas").classList.remove("hidden");
                 document.getElementById("mensagens").classList.remove("hidden");
@@ -147,8 +155,12 @@
                 document.getElementById("erro").classList.remove("hidden");
                 document.getElementById("messageCanvas").classList.remove("hidden");
                 document.getElementById("grid").classList.remove("hidden");
+
+                setDrumImage("img/drumSetDisplay1.png");
+                loadDetectorImage("img/detetorGrande1.png");
             });
         };
+
     </script>
 
 </body>

@@ -30,14 +30,14 @@ export async function animateVareta() {
     if (!animationStopped) {
         //Modifica a posição e angulo da vareta
         vareta.y += vareta.speedY;
-        vareta.angle += vareta.rotationSpeed * (Math.PI / 180); 
+        vareta.angle += vareta.rotationSpeed * (Math.PI / 180);
         if (vareta.x > canvas.width * 0.10) {
             vareta.x -= vareta.speedY;
         }
 
         //Aplica a rotação e translação da vareta e desenha-a
         erro.save();
-        erro.translate(vareta.x, vareta.y); 
+        erro.translate(vareta.x, vareta.y);
         erro.rotate(vareta.angle); // Roda o canvas inteiro da vareta
         erro.drawImage(varetaImg, varetaImg.width, varetaImg.height);
         erro.restore();
@@ -57,5 +57,17 @@ function drawBrokenScreen() {
     //Desenha o ecrâ partido
     erro.drawImage(brokenScreenImg, 0, 0, canvas.width, canvas.height);
 
+}
+
+export function resetVareta() {
+    vareta = {
+        x: canvas.width / 2,
+        y: -200,
+        angle: 0,
+        speedY: 10,
+        rotationSpeed: 3
+    };
+    animationStopped = false;
+    erro.clearRect(0, 0, canvas.width, canvas.height);
 }
 
