@@ -8,7 +8,10 @@
     <meta name="mobile-web-app-capable" content="yes">
     <link rel="manifest" href="/manifest.json">
     <link rel="stylesheet" href="styles/grid.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" />
+
     <title>Whiplash Drum Game</title>
+
     <style>
         html {
             background-color: #613213;
@@ -85,6 +88,15 @@
             height: 100vh;
             object-fit: cover;
         }
+
+        #doorIcon {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            font-size: 48px;
+            color: #BC7D30;
+            z-index: 5;
+        }
     </style>
 </head>
 
@@ -105,6 +117,8 @@
         <canvas id="erro" class="hidden"></canvas>
         <canvas id="messageCanvas"></canvas>
         <div class="grid-container" id="grid"></div>
+        <span id="doorIcon" class="material-symbols-outlined hidden" style="cursor: pointer">door_open</span>
+
     </div>
 
 
@@ -115,18 +129,24 @@
         import { resetVareta } from './erros.js';
         import { resetBlurryScreen } from './newerro.js';
         import { resetPulsingBlur } from './newerro2.js';
-        import { setDrumImage } from './notas.js';
+        import { setDrumImage, setInvitationMode } from './notas.js';
         import { loadDetectorImage } from './detetor.js';
 
         window.leftDoor = () => {
             console.log("leftDoor");
+
+            setInvitationMode(true);
             setDrumImage("img/drumSetPlayfull.png");
             loadDetectorImage("img/playfulDetector.png");
             document.getElementById("intro").classList.add("hidden");
             document.getElementById("game").classList.remove("hidden");
+            document.getElementById("doorIcon").classList.remove("hidden");
+
         };
 
+
         window.frontDoor = () => {
+            setInvitationMode(false);
             console.log("frontDoor");
 
             document.getElementById("intro").classList.add("hidden");
@@ -155,11 +175,27 @@
                 document.getElementById("erro").classList.remove("hidden");
                 document.getElementById("messageCanvas").classList.remove("hidden");
                 document.getElementById("grid").classList.remove("hidden");
+                document.getElementById("doorIcon").classList.remove("hidden");
 
                 setDrumImage("img/drumSetDisplay1.png");
                 loadDetectorImage("img/detetorGrande1.png");
             });
         };
+
+        document.getElementById("doorIcon").addEventListener("click", () => {
+            // Send the user back to the hallway
+            document.getElementById("game").classList.add("hidden");
+            document.getElementById("intro").classList.remove("hidden");
+
+            // Hide the icon itself
+            document.getElementById("doorIcon").classList.add("hidden");
+
+            // Optionally stop video or music if needed
+            const video = document.getElementById("introVideo");
+            video.pause();
+            video.currentTime = 0;
+        });
+
 
     </script>
 

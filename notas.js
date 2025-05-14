@@ -11,6 +11,9 @@ const sentenceTrigger = 3;
 const errorTrigger = 6;
 let consecutiveHits = 0;
 let consecutiveMisses = 0;
+let invitationMode = false;
+let invitationHits = 0;
+
 
 let numCirc;
 let mudar = false;
@@ -23,8 +26,7 @@ canvas.classList.add("hidden");
 const ctx = canvas.getContext("2d");
 let switchBubble = false;
 let mainRoom = false;
-let fadeTimeout = null;
-let fadeInterval = null;
+
 
 
 
@@ -61,16 +63,15 @@ export function map(value, inMin, inMax, outMin, outMax) {
 
 let greenSquares = [];
 const maxRadius = 75;
-const growthRate = 1;
+const growthRate = 0.5;
 
 async function initializeGreenSquares() {
-    if (greenSquares.length <= 8) {
-        greenSquares = getGreenSquares().map(square => ({
-            x: square.x * (canvas.width / window.innerWidth),
-            y: square.y * (canvas.height / window.innerHeight),
-            radius: 0
-        }));
-    }
+    greenSquares = [];
+    greenSquares = getGreenSquares().map(square => ({
+        x: square.x * (canvas.width / window.innerWidth),
+        y: square.y * (canvas.height / window.innerHeight),
+        radius: 0
+    }));
     numCirc = await getRandomInt(0, greenSquares.length - 1);
 }
 
@@ -79,8 +80,7 @@ let step;
 function update(index) {
     if (greenSquares.length > 0 && greenSquares[numCirc].radius < maxRadius) {
         step = 0;
-        greenSquares[numCirc].radius += growthRate;
-
+        greenSquares[numCirc].radius += invitationMode ? 0.3 : growthRate;
     } else {
         switch (step) {
             case 0:
@@ -89,10 +89,12 @@ function update(index) {
                 consecutiveHits = 0;
                 fadeOutMusicAfterDelay();
                 maxRadiusReached++;
-
-                if (mainRoom) updateBackgroundColor();
+                if (!invitationMode) updateBackgroundColor();
                 step++;
                 mudarIndexMessage = true;
+                if (invitationMode) {
+                    invitationHits = 0;
+                }
                 break;
 
             case 1:
@@ -126,7 +128,7 @@ async function draw() {
     ctx.drawImage(drumSet, 0, 0, canvas.width, canvas.height);
     ctx.fillStyle = "red";
     switchBubble = false;
-
+    console.log(greenSquares);
     if (mudar) {
         numCirc = await getRandomInt(0, greenSquares.length - 1);
         greenSquares[numCirc].radius = 0;
@@ -146,7 +148,7 @@ async function draw() {
     }
 
 
-    if (maxRadiusReached % sentenceTrigger === 0 && maxRadiusReached > 0) {
+    if (!invitationMode && maxRadiusReached % sentenceTrigger === 0 && maxRadiusReached > 0) {
         if (mudarIndexMessage) {
             const reprimendMessages = getMessagesById("Encouragement");
             console.log("Im in");
@@ -164,11 +166,12 @@ async function draw() {
         maxRadiusReached = 0;
         mudarIndexMessage = true;
     }
-    if (consecutiveMisses > 10) {
+    if (!invitationMode && consecutiveMisses > 10) {
         sendUserBackToIntro();
         return; // Exit early to prevent more drawing
     }
-    setTimeout(() => update(numCirc), 500); // ✅ this delays update properly
+    setTimeout(() => update(numCirc), 1000);
+
 
 
 
@@ -189,23 +192,20 @@ canvas.addEventListener("click", (event) => {
     const hit = calculateDistance(mouseX, mouseY, greenSquares[numCirc].x, greenSquares[numCirc].y) < greenSquares[numCirc].radius;
 
     if (hit && greenSquares[numCirc].radius < maxRadius) {
-        if (fadeTimeout) {
-            clearTimeout(fadeTimeout);
-            fadeTimeout = null;
-        }
-        if (fadeInterval) {
-            clearInterval(fadeInterval);
-            fadeInterval = null;
-        }
+
         tryPlayMusic();
 
-        // Increase volume smoothly up to 1.0
-        if (jazzAudio.volume < 1.0) {
-            jazzAudio.volume = Math.min(1.0, jazzAudio.volume + 0.05);
-        }
-
-        if (maxRadiusReached >= 1 && !switchBubble) {
-            maxRadiusReached--;
+        if (invitationMode) {
+            invitationHits++;
+            if (invitationHits >= 15) {
+                const invitationMessages = getMessagesById("Invitation");
+                if (invitationMessages.length > 0) {
+                    const randomIndex = Math.floor(Math.random() * invitationMessages.length);
+                    const index = messages.indexOf(invitationMessages[randomIndex]);
+                    showMessageByIndex(index);
+                }
+                invitationHits = 0; // reset after displaying
+            }
         }
 
         if (consecutiveHits >= 6) {
@@ -216,10 +216,6 @@ canvas.addEventListener("click", (event) => {
         consecutiveHits++;
         consecutiveMisses = 0;
 
-        // Increase volume smoothly up to 1.0
-        if (jazzAudio.volume < 1.0) {
-            jazzAudio.volume = Math.min(1.0, jazzAudio.volume + 0.05);
-        }
 
         if (maxRadiusReached >= 1 && !switchBubble) {
             maxRadiusReached--;
@@ -291,7 +287,10 @@ function triggerErroAnimation() {
 function sendUserBackToIntro() {
     document.getElementById("game").classList.add("hidden");
     document.getElementById("intro").classList.remove("hidden");
+    document.getElementById("doorIcon").classList.add("hidden");
 
+
+    greenSquares = [];
     maxRadiusReached = 0;
     consecutiveHits = 0;
     consecutiveMisses = 0;
@@ -304,6 +303,11 @@ function sendUserBackToIntro() {
     resetPulsingBlur();
     resetVareta();
 }
+
+export function setInvitationMode(enabled) {
+    invitationMode = enabled;
+}
+
 
 
 setTimeout(() => {
