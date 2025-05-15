@@ -179,7 +179,7 @@ async function draw() {
 
 canvas.addEventListener("click", (event) => {
     // MUSIC CONTROL
-    tryPlayMusic();
+    //tryPlayMusic();
     cancelFadeOut();
 
     if (!greenSquares[numCirc]) return;
@@ -192,7 +192,7 @@ canvas.addEventListener("click", (event) => {
 
     if (hit && greenSquares[numCirc].radius < maxRadius) {
 
-        tryPlayMusic();
+        //tryPlayMusic();
 
         if (invitationMode) {
             invitationHits++;

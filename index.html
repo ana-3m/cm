@@ -121,9 +121,6 @@
     </div>
     <div id="musicSelection" class="hidden">
         <h2>Escolha uma música para treinar:</h2>
-        <!--  <button onclick="selectMusic('sound/hipjazz.mp3')">Música 1</button>
-        <button onclick="selectMusic('sound/thejazzpiano')">Música 2</button>
-        <button onclick="selectMusic('sound/thelounge')">Música 3</button> -->
         <button id="sound1">Música 1</button>
         <button id="sound2">Música 2</button>
         <button id="sound3">Música 3</button>
@@ -156,7 +153,7 @@
         import { loadDetectorImage } from './detetor.js';
         import { showMessageByIndex } from './js/messages.js';
         export let frontDoorUnlocked = false;
-        let selectedMusic = false;
+        let selectedMusic = null;
 
         window.leftDoor = () => {
             setInvitationMode(true);
@@ -168,19 +165,16 @@
 
 
             document.getElementById("sound1").addEventListener("click", function () {
-                selectMusic('sound/hipjazz.mp3');
+                selectMusic('./sound/hipjazz.mp3');
             });
             document.getElementById("sound2").addEventListener("click", function () {
-                selectMusic('sound/thejazzpiano.mp3');
+                selectMusic('./sound/thejazzpiano.mp3');
             });
             document.getElementById("sound3").addEventListener("click", function () {
-                selectMusic('sound/thelounge.mp3');
+                selectMusic('./sound/thelounge.mp3');
             });
-            
-            document.getElementById("doorIcon").classList.remove("hidden");
 
-            //por agora para desbloquear a porta grande
-            document.getElementById("frontDoor").classList.remove("locked");
+            document.getElementById("doorIcon").classList.remove("hidden");
         };
 
         window.frontDoor = () => {
@@ -270,6 +264,9 @@
                             module.markCountdownFinished();
                             module.initializeGreenSquares();
                             module.gameLoop();
+                            import('./music.js').then(module => {
+                                module.tryPlayMusic(selectedMusic); // Passa a escolha para `music.js`
+                            });
                         });
                     }, 1000);
                 }
@@ -283,11 +280,15 @@
         }
 
         function selectMusic(musicName) {
-            selectedMusic = true; // Guarda a escolha do jogador
+            selectedMusic = musicName; // Guarda a escolha do jogador
             document.getElementById("musicSelection").classList.add("hidden"); // Esconde o menu após a escolha
             document.getElementById("game").classList.remove("hidden");
 
-            console.log("Música escolhida:", musicName); // Verifica no console
+            console.log("Música escolhida:", selectedMusic); // Verifica no console
+
+            import('./music.js').then(module => {
+                module.tryPlayMusic(selectedMusic); // Passa a escolha para `music.js`
+            });
         }
 
 
