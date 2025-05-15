@@ -146,6 +146,13 @@
     <script type="module" src="notas.js"></script>
     <script type="module">
 
+        //**************************************fullscreen******************************************************
+        document.addEventListener("click", () => {
+            document.documentElement.requestFullscreen().catch(err => {
+                console.warn("Erro ao tentar ativar fullscreen:", err);
+            });
+        });
+
         import { resetVareta } from './erros.js';
         import { resetBlurryScreen } from './newerro.js';
         import { resetPulsingBlur } from './newerro2.js';
