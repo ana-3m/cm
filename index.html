@@ -40,7 +40,7 @@
         canvas,
         #erro {
             position: absolute;
-            margin: auto;
+            margin:auto;
             top: 0;
             left: 0;
         }
@@ -116,8 +116,8 @@
     <!--  <h1>Whiplash Drum Game</h1> -->
     <div id="intro">
         <canvas id="introCanvas"></canvas>
-        <div id="leftDoor" class="porta " onclick="leftDoor()"> </div>
-        <div id="frontDoor" class="porta locked" onclick="frontDoor()"> </div>
+        <div id="leftDoor" class="porta" onclick="leftDoor()"> </div>
+        <div id="frontDoor" class="porta" onclick="frontDoor()"> </div>
     </div>
     <div id="game" class="hidden">
         <video id="introVideo" class="hidden" width="100vw" height="100vh" controls>
@@ -127,19 +127,19 @@
         <canvas id="mensagens"> </canvas>
         <canvas id="gameDetetor"></canvas>
         <canvas id="erro" class="hidden"></canvas>
+      
         <canvas id="messageCanvas" style="z-index: 3;"></canvas>
         <div class="grid-container" id="grid"></div>
         <div id="countdownNumber" class="hidden grid-item"></div>
 
-
         <span id="doorIcon" class="material-symbols-outlined hidden" style="cursor: pointer">door_open</span>
-
     </div>
-
+  
     <!-- JAVASCRIPT -->
     <script type="module" src="intro.js"></script>
     <script type="module" src="notas.js"></script>
     <script type="module">
+      
         import { resetVareta } from './erros.js';
         import { resetBlurryScreen } from './newerro.js';
         import { resetPulsingBlur } from './newerro2.js';
@@ -148,13 +148,14 @@
         import { showMessageByIndex } from './js/messages.js';
         export let frontDoorUnlocked = false;
 
-
         window.leftDoor = () => {
             setInvitationMode(true);
+          
             setDrumImage("img/drumSetPlayfull.png");
             loadDetectorImage("img/playfulDetector.png");
             document.getElementById("intro").classList.add("hidden");
             document.getElementById("game").classList.remove("hidden");
+
             document.getElementById("doorIcon").classList.remove("hidden");
 
         };
@@ -172,10 +173,12 @@
             document.getElementById("intro").classList.add("hidden");
             document.getElementById("game").classList.remove("hidden");
 
+            // Show the video and hide other elements
             const video = document.getElementById("introVideo");
             video.classList.remove("hidden");
             video.play();
             video.removeAttribute("controls");
+
             document.getElementById("gameCanvas").classList.add("hidden");
             document.getElementById("mensagens").classList.add("hidden");
             document.getElementById("gameDetetor").classList.add("hidden");
@@ -188,6 +191,7 @@
             document.getElementById("grid").classList.add("hidden");
 
             video.addEventListener("ended", () => {
+
                 video.classList.add("hidden");
                 document.getElementById("gameCanvas").classList.remove("hidden");
                 document.getElementById("mensagens").classList.remove("hidden");
@@ -195,6 +199,7 @@
                 document.getElementById("erro").classList.remove("hidden");
                 document.getElementById("messageCanvas").classList.remove("hidden");
                 document.getElementById("grid").classList.remove("hidden");
+
                 document.getElementById("doorIcon").classList.remove("hidden");
 
                 showMessageByIndex(2);  // Try showing one directly

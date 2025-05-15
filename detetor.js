@@ -20,7 +20,6 @@ export function loadDetectorImage(imageSrc) {
         canvas.style.display = "none";
 
     };
-
 }
 
 //Deteção dos quadrados verdes

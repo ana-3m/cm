@@ -30,7 +30,7 @@ let mainRoom = false;
 export let countdownFinished = false;
 export function markCountdownFinished() {
     countdownFinished = true;
-}
+
 
 function resizeCanvas() {
     const aspectRatio = drumSet.width / drumSet.height;
@@ -123,7 +123,6 @@ function updateBackgroundColor() {
 }
 
 
-
 async function draw() {
 
     ctx.filter = "drop-shadow(0px -3px 0px rgba(29, 29, 29, 0.3))";
@@ -134,6 +133,7 @@ async function draw() {
     switchBubble = false;
     if (mudar) {
         numCirc = await getRandomInt(0, greenSquares.length - 1);
+
         greenSquares[numCirc].radius = 0;
         mudar = false;
     }
@@ -174,7 +174,6 @@ async function draw() {
         return; // Exit early to prevent more drawing
     }
     setTimeout(() => update(numCirc), 1000);
-
     return;
 }
 
@@ -257,7 +256,7 @@ function resetErrors() {
     maxRadiusReached = 0;
 }
 
-
+  
 function gameLoop() {
     draw();
     requestAnimationFrame(gameLoop);
