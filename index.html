@@ -40,7 +40,7 @@
         canvas,
         #erro {
             position: absolute;
-            margin:auto;
+            margin: auto;
             top: 0;
             left: 0;
         }
@@ -117,7 +117,16 @@
     <div id="intro">
         <canvas id="introCanvas"></canvas>
         <div id="leftDoor" class="porta" onclick="leftDoor()"> </div>
-        <div id="frontDoor" class="porta" onclick="frontDoor()"> </div>
+        <div id="frontDoor" class="porta locked" onclick="frontDoor()"> </div>
+    </div>
+    <div id="musicSelection" class="hidden">
+        <h2>Escolha uma música para treinar:</h2>
+        <!--  <button onclick="selectMusic('sound/hipjazz.mp3')">Música 1</button>
+        <button onclick="selectMusic('sound/thejazzpiano')">Música 2</button>
+        <button onclick="selectMusic('sound/thelounge')">Música 3</button> -->
+        <button id="sound1">Música 1</button>
+        <button id="sound2">Música 2</button>
+        <button id="sound3">Música 3</button>
     </div>
     <div id="game" class="hidden">
         <video id="introVideo" class="hidden" width="100vw" height="100vh" controls>
@@ -127,19 +136,19 @@
         <canvas id="mensagens"> </canvas>
         <canvas id="gameDetetor"></canvas>
         <canvas id="erro" class="hidden"></canvas>
-      
+
         <canvas id="messageCanvas" style="z-index: 3;"></canvas>
         <div class="grid-container" id="grid"></div>
         <div id="countdownNumber" class="hidden grid-item"></div>
 
         <span id="doorIcon" class="material-symbols-outlined hidden" style="cursor: pointer">door_open</span>
     </div>
-  
+
     <!-- JAVASCRIPT -->
     <script type="module" src="intro.js"></script>
     <script type="module" src="notas.js"></script>
     <script type="module">
-      
+
         import { resetVareta } from './erros.js';
         import { resetBlurryScreen } from './newerro.js';
         import { resetPulsingBlur } from './newerro2.js';
@@ -147,17 +156,31 @@
         import { loadDetectorImage } from './detetor.js';
         import { showMessageByIndex } from './js/messages.js';
         export let frontDoorUnlocked = false;
+        let selectedMusic = false;
 
         window.leftDoor = () => {
             setInvitationMode(true);
-          
+
             setDrumImage("img/drumSetPlayfull.png");
             loadDetectorImage("img/playfulDetector.png");
             document.getElementById("intro").classList.add("hidden");
-            document.getElementById("game").classList.remove("hidden");
+            document.getElementById("musicSelection").classList.remove("hidden");
 
+
+            document.getElementById("sound1").addEventListener("click", function () {
+                selectMusic('sound/hipjazz.mp3');
+            });
+            document.getElementById("sound2").addEventListener("click", function () {
+                selectMusic('sound/thejazzpiano.mp3');
+            });
+            document.getElementById("sound3").addEventListener("click", function () {
+                selectMusic('sound/thelounge.mp3');
+            });
+            
             document.getElementById("doorIcon").classList.remove("hidden");
 
+            //por agora para desbloquear a porta grande
+            document.getElementById("frontDoor").classList.remove("locked");
         };
 
         window.frontDoor = () => {
@@ -258,6 +281,15 @@
         export function markCountdownFinished() {
             countdownFinished = true;
         }
+
+        function selectMusic(musicName) {
+            selectedMusic = true; // Guarda a escolha do jogador
+            document.getElementById("musicSelection").classList.add("hidden"); // Esconde o menu após a escolha
+            document.getElementById("game").classList.remove("hidden");
+
+            console.log("Música escolhida:", musicName); // Verifica no console
+        }
+
 
     </script>
 
