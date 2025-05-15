@@ -97,6 +97,18 @@
             color: #BC7D30;
             z-index: 5;
         }
+
+        #countdownNumber {
+            position: absolute;
+            font-size: 10vw;
+            font-weight: bold;
+            color: white;
+            text-align: center;
+            pointer-events: none;
+            z-index: 100;
+            left: 50vw;
+            top: 75vh;
+        }
     </style>
 </head>
 
@@ -104,8 +116,8 @@
     <!--  <h1>Whiplash Drum Game</h1> -->
     <div id="intro">
         <canvas id="introCanvas"></canvas>
-        <div id="leftDoor" class="porta" onclick="leftDoor()"> </div>
-        <div id="frontDoor" class="porta" onclick="frontDoor()"> </div>
+        <div id="leftDoor" class="porta " onclick="leftDoor()"> </div>
+        <div id="frontDoor" class="porta locked" onclick="frontDoor()"> </div>
     </div>
     <div id="game" class="hidden">
         <video id="introVideo" class="hidden" width="100vw" height="100vh" controls>
@@ -115,12 +127,14 @@
         <canvas id="mensagens"> </canvas>
         <canvas id="gameDetetor"></canvas>
         <canvas id="erro" class="hidden"></canvas>
-        <canvas id="messageCanvas"></canvas>
+        <canvas id="messageCanvas" style="z-index: 3;"></canvas>
         <div class="grid-container" id="grid"></div>
+        <div id="countdownNumber" class="hidden grid-item"></div>
+
+
         <span id="doorIcon" class="material-symbols-outlined hidden" style="cursor: pointer">door_open</span>
 
     </div>
-
 
     <!-- JAVASCRIPT -->
     <script type="module" src="intro.js"></script>
@@ -129,12 +143,13 @@
         import { resetVareta } from './erros.js';
         import { resetBlurryScreen } from './newerro.js';
         import { resetPulsingBlur } from './newerro2.js';
-        import { setDrumImage, setInvitationMode } from './notas.js';
+        import { setDrumImage, setInvitationMode, sendUserBackToIntro } from './notas.js';
         import { loadDetectorImage } from './detetor.js';
+        import { showMessageByIndex } from './js/messages.js';
+        export let frontDoorUnlocked = false;
+
 
         window.leftDoor = () => {
-            console.log("leftDoor");
-
             setInvitationMode(true);
             setDrumImage("img/drumSetPlayfull.png");
             loadDetectorImage("img/playfulDetector.png");
@@ -144,8 +159,13 @@
 
         };
 
-
         window.frontDoor = () => {
+            if (document.getElementById("frontDoor").classList.contains("locked")) {
+                console.log("Front door is locked.");
+                // Optional: visual feedback
+                alert("You must complete the left room first!");
+                return;
+            }
             setInvitationMode(false);
             console.log("frontDoor");
 
@@ -177,25 +197,62 @@
                 document.getElementById("grid").classList.remove("hidden");
                 document.getElementById("doorIcon").classList.remove("hidden");
 
+                showMessageByIndex(2);  // Try showing one directly
                 setDrumImage("img/drumSetDisplay1.png");
                 loadDetectorImage("img/detetorGrande1.png");
+
+                startCountdown();
             });
         };
 
         document.getElementById("doorIcon").addEventListener("click", () => {
-            // Send the user back to the hallway
-            document.getElementById("game").classList.add("hidden");
-            document.getElementById("intro").classList.remove("hidden");
-
-            // Hide the icon itself
-            document.getElementById("doorIcon").classList.add("hidden");
-
-            // Optionally stop video or music if needed
-            const video = document.getElementById("introVideo");
-            video.pause();
-            video.currentTime = 0;
+            sendUserBackToIntro();
         });
 
+        function startCountdown() {
+            const grid = document.getElementById("grid");
+            const countdownEl = document.getElementById("countdownNumber");
+
+            grid.classList.remove("hidden");
+            countdownEl.classList.remove("hidden");
+
+            const sequence = [
+                { number: "3", col: 1, row: 3 },
+                { number: "2", col: 6, row: 5 },
+                { number: "1", col: 10, row: 3 },
+            ];
+
+            let index = 0;
+
+            function showNext() {
+                const item = sequence[index];
+                countdownEl.textContent = item.number;
+                countdownEl.style.gridColumn = item.col;
+                countdownEl.style.gridRow = item.row;
+
+                index++;
+                if (index < sequence.length) {
+                    setTimeout(showNext, 1000);
+                } else {
+                    setTimeout(() => {
+                        countdownEl.classList.add("hidden");
+                        grid.classList.add("hidden");
+
+                        import('./notas.js').then(module => {
+                            module.markCountdownFinished();
+                            module.initializeGreenSquares();
+                            module.gameLoop();
+                        });
+                    }, 1000);
+                }
+            }
+
+            showNext();
+        }
+
+        export function markCountdownFinished() {
+            countdownFinished = true;
+        }
 
     </script>
 

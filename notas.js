@@ -13,8 +13,7 @@ let consecutiveHits = 0;
 let consecutiveMisses = 0;
 let invitationMode = false;
 let invitationHits = 0;
-
-
+const invitationHitsMax = 2;
 let numCirc;
 let mudar = false;
 const drumSet = new Image();
@@ -28,9 +27,10 @@ let switchBubble = false;
 let mainRoom = false;
 
 
-
-
-
+export let countdownFinished = false;
+export function markCountdownFinished() {
+    countdownFinished = true;
+}
 
 function resizeCanvas() {
     const aspectRatio = drumSet.width / drumSet.height;
@@ -122,13 +122,16 @@ function updateBackgroundColor() {
     document.body.style.backgroundColor = lerpedColor;
 }
 
+
+
 async function draw() {
+
     ctx.filter = "drop-shadow(0px -3px 0px rgba(29, 29, 29, 0.3))";
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     ctx.drawImage(drumSet, 0, 0, canvas.width, canvas.height);
     ctx.fillStyle = "red";
+        if(!countdownFinished && !invitationMode) return;
     switchBubble = false;
-    console.log(greenSquares);
     if (mudar) {
         numCirc = await getRandomInt(0, greenSquares.length - 1);
         greenSquares[numCirc].radius = 0;
@@ -155,12 +158,12 @@ async function draw() {
             if (reprimendMessages.length > 0) {
                 const randomIndex = Math.floor(Math.random() * reprimendMessages.length);
                 messageIndex = messages.indexOf(reprimendMessages[randomIndex]);
+                showMessageByIndex(messageIndex);
+                console.log("Message index:", messageIndex);
             }
             mudarIndexMessage = await false;
-            return;
         }
-        showMessageByIndex(messageIndex);
-    }
+    } else showMessageByIndex(messageIndex);
     if (maxRadiusReached % errorTrigger === 0 && maxRadiusReached > 0 && mainRoom) {
         triggerErroAnimation();
         maxRadiusReached = 0;
@@ -172,16 +175,13 @@ async function draw() {
     }
     setTimeout(() => update(numCirc), 1000);
 
-
-
-
     return;
 }
 
 canvas.addEventListener("click", (event) => {
     // MUSIC CONTROL
-    tryPlayMusic();              // Start music if not started
-    cancelFadeOut();             // Cancel any pending fade
+    tryPlayMusic();
+    cancelFadeOut();
 
     if (!greenSquares[numCirc]) return;
 
@@ -197,8 +197,15 @@ canvas.addEventListener("click", (event) => {
 
         if (invitationMode) {
             invitationHits++;
-            if (invitationHits >= 15) {
+            if (invitationHits >= invitationHitsMax) {
+                if (document.getElementById("frontDoor").classList.contains("locked")) {
+                    window.frontDoorUnlocked = true;
+                    const frontDoor = document.getElementById("frontDoor");
+                    frontDoor.classList.remove("locked");
+                    frontDoor.style.cursor = "pointer";
+                }
                 const invitationMessages = getMessagesById("Invitation");
+
                 if (invitationMessages.length > 0) {
                     const randomIndex = Math.floor(Math.random() * invitationMessages.length);
                     const index = messages.indexOf(invitationMessages[randomIndex]);
@@ -284,7 +291,7 @@ function triggerErroAnimation() {
     }
 }
 
-function sendUserBackToIntro() {
+export function sendUserBackToIntro() {
     document.getElementById("game").classList.add("hidden");
     document.getElementById("intro").classList.remove("hidden");
     document.getElementById("doorIcon").classList.add("hidden");
@@ -308,6 +315,7 @@ export function setInvitationMode(enabled) {
     invitationMode = enabled;
 }
 
+export { initializeGreenSquares, gameLoop };
 
 
 setTimeout(() => {
