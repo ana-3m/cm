@@ -26,7 +26,7 @@ export const messages = [
     parts: [
       { text: "YOU", col: 1, row: 2 },
       { text: "EVEN TRYING", col: 5, row: 5 },
-      {text:"?", col: 11, row: 3}
+      { text: "?", col: 11, row: 3 }
     ]
   },
   {
@@ -63,6 +63,24 @@ export const messages = [
       { text: "HAVE IT", col: 1, row: 4 },
       { text: "IN YOU", col: 9, row: 5 }
     ]
+  }, {
+    id: "Invitation",
+    parts: [
+      { text: "come", col: 1, row: 3 },
+      { text: "with me", col: 5, row: 5 }
+    ]
+  }, {
+    id: "Invitation",
+    parts: [
+      { text: "let's", col: 2, row: 3 },
+      { text: "play", col: 6, row: 4 }
+    ]
+  }, {
+    id: "Invitation",
+    parts: [
+      { text: "join", col: 1, row: 3 },
+      { text: "the fun", col: 5, row: 5 }
+    ]
   }
 ];
 
@@ -72,7 +90,7 @@ const messageElements = new Map(); // Using Map for efficient lookup
 
 //Criação da grelha 
 function initializeElements() {
- // Elimina os elementos existentes
+  // Elimina os elementos existentes
   while (grid.firstChild) {
     grid.removeChild(grid.firstChild);
   }

@@ -1,8 +1,7 @@
 //Esta função é responsável por detectar os quadados verdes na imagem que nao está visivel
 //isto para detetar o centro dos intrumentos e exporta a função getGreenSquares que devolve um array com as posições dos quadrados verdes 
-
 const canvas = document.getElementById("gameDetetor");
-const ctx = canvas.getContext("2d");
+const ctx = canvas.getContext("2d", { willReadFrequently: true });
 const drumImg = new Image();
 
 let greenSquares = [];
@@ -15,8 +14,11 @@ export function loadDetectorImage(imageSrc) {
     drumImg.onload = () => {
         ctx.clearRect(0, 0, canvas.width, canvas.height);
         ctx.drawImage(drumImg, 0, 0, canvas.width, canvas.height);
+
+        // ✅ Delay detection to allow image to fully render
         detectGreen();
         canvas.style.display = "none";
+
     };
 }
 
@@ -34,9 +36,9 @@ function detectGreen() {
         if (g > 200 && r < 100 && b < 100) {
             const x = (i / 4) % canvas.width;
             const y = Math.floor((i / 4) / canvas.width);
-                greenSquares.push({ x, y });
-            }
+            greenSquares.push({ x, y });
         }
+    }
 }
 
 // Exporta a função com os quadrados verdes

@@ -32,3 +32,10 @@ export async function drawPulsingBlur() {
 
     animate(); // Inicia o loop da animação uma única vez
 }
+
+export function resetPulsingBlur() {
+    opacity = 0.5;
+    time = 0;
+    animationRunning = false;
+    erro.clearRect(0, 0, canvas.width, canvas.height);
+}

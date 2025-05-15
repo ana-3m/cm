@@ -17,10 +17,15 @@ export async function drawBlurryScreen() {
     // Define a opacidade da imagem
     erro.globalAlpha = opacity;
     erro.drawImage(blurImg, 0, 0, canvas.width, canvas.height);
-    
+
     // Incrementa a opacidade até o máximo (1.0)
     if (opacity < 1) {
         opacity += fadeSpeed;
         requestAnimationFrame(drawBlurryScreen); // Chama a função novamente para criar o efeito gradativo
     }
+}
+
+export function resetBlurryScreen() {
+    opacity = 0; // Reset opacity
+    erro.clearRect(0, 0, canvas.width, canvas.height);
 }
