@@ -109,6 +109,72 @@
             left: 50vw;
             top: 75vh;
         }
+
+        #bottomBar {
+            position: fixed;
+            /* Fixa a barra ao fundo da página */
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 200px;
+        }
+
+        #conteiner {
+            position: relative;
+            height: 100%;
+        }
+
+        #content {
+            height: 100%;
+            width: 97%;
+            background-color: #be9058;
+            /* Fundo preto com 80% de opacidade */
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            font-family: Arial, sans-serif;
+            box-sizing: border-box;
+            padding: 0 15px;
+        }
+
+        #conteiner img {
+            position: absolute;
+            bottom: 0;
+            right: 0;
+            height: 500px;
+            /* Define a altura máxima da imagem */
+            width: auto;
+        }
+
+        #textF {
+            position: absolute;
+            top: 10%;
+            left: 5%;
+            font-size: 26px;
+            font-weight: bold;
+            color: #000000;
+        }
+
+        #continue {
+            position: absolute;
+            bottom: 5%;
+            left: 45%;
+            font-size: 14px;
+            color: #836137;
+
+        }
+
+        @media only screen and (max-width: 1000px) {
+
+            #bottomBar {
+                height: 100px;
+            }
+
+            #bottomBar img {
+                height: 300px;
+                width: auto;
+            }
+        }
     </style>
 </head>
 
@@ -140,18 +206,26 @@
 
         <span id="doorIcon" class="material-symbols-outlined hidden" style="cursor: pointer">door_open</span>
     </div>
+    <div id="bottomBar">
+        <div id="conteiner" class="hidden" style="z-index: 5;">
+            <img src="img/angryFletcher.png" alt="Angry Fletcher">
+            <div id="content">
+            </div>
+        </div>
+    </div>
 
     <!-- JAVASCRIPT -->
     <script type="module" src="intro.js"></script>
     <script type="module" src="notas.js"></script>
     <script type="module">
 
-        //**************************************fullscreen******************************************************
+        //**********************************************fullscreen**********************************************
         document.addEventListener("click", () => {
             document.documentElement.requestFullscreen().catch(err => {
                 console.warn("Erro ao tentar ativar fullscreen:", err);
             });
         });
+        //******************************************************************************************************
 
         import { resetVareta } from './erros.js';
         import { resetBlurryScreen } from './newerro.js';
@@ -159,6 +233,7 @@
         import { setDrumImage, setInvitationMode, sendUserBackToIntro } from './notas.js';
         import { loadDetectorImage } from './detetor.js';
         import { showMessageByIndex } from './js/messages.js';
+        import { showFletcherPhrase, hideFletcherPhrase } from './fletcher.js';
         export let frontDoorUnlocked = false;
         let selectedMusic = null;
 
@@ -188,7 +263,7 @@
             if (document.getElementById("frontDoor").classList.contains("locked")) {
                 console.log("Front door is locked.");
                 // Optional: visual feedback
-                alert("You must complete the left room first!");
+                showFletcherPhrase('lockedDoor');
                 return;
             }
             setInvitationMode(false);
