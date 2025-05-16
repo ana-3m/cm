@@ -30,7 +30,7 @@ let mainRoom = false;
 export let countdownFinished = false;
 export function markCountdownFinished() {
     countdownFinished = true;
-
+}
 
 function resizeCanvas() {
     const aspectRatio = drumSet.width / drumSet.height;
@@ -129,7 +129,7 @@ async function draw() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     ctx.drawImage(drumSet, 0, 0, canvas.width, canvas.height);
     ctx.fillStyle = "red";
-        if(!countdownFinished && !invitationMode) return;
+    if (!countdownFinished && !invitationMode) return;
     switchBubble = false;
     if (mudar) {
         numCirc = await getRandomInt(0, greenSquares.length - 1);
@@ -256,7 +256,7 @@ function resetErrors() {
     maxRadiusReached = 0;
 }
 
-  
+
 function gameLoop() {
     draw();
     requestAnimationFrame(gameLoop);
