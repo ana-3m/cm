@@ -6,9 +6,6 @@ import { messages } from './js/messages.js';
 import { drawBlurryScreen, resetBlurryScreen } from './newerro.js';
 import { drawPulsingBlur, resetPulsingBlur } from './newerro2.js';
 import { tryPlayMusic, setVolumeFromRadius, cancelFadeOut, fadeOutMusicAfterDelay, resetMusic } from './music.js';
-import { showFletcherPhrase, hideFletcherPhrase } from './fletcher.js';
-
-let gamePaused = false;
 
 const sentenceTrigger = 3;
 const errorTrigger = 6;
@@ -81,18 +78,13 @@ async function initializeGreenSquares() {
 let step;
 
 function update(index) {
-    if (gamePaused) {
-        // Se o jogo está pausado, só reagende sem fazer nada
-        setTimeout(() => update(index), 1000);
-        return;
-    }
-
     if (greenSquares.length > 0 && greenSquares[numCirc].radius < maxRadius) {
         step = 0;
         greenSquares[numCirc].radius += invitationMode ? 0.3 : growthRate;
     } else {
         switch (step) {
             case 0:
+                // Count as a miss
                 consecutiveMisses++;
                 consecutiveHits = 0;
                 fadeOutMusicAfterDelay();
@@ -104,6 +96,7 @@ function update(index) {
                     invitationHits = 0;
                 }
                 break;
+
             case 1:
                 switchBubble = true;
                 break;
@@ -208,24 +201,16 @@ canvas.addEventListener("click", (event) => {
                     window.frontDoorUnlocked = true;
                     const frontDoor = document.getElementById("frontDoor");
                     frontDoor.classList.remove("locked");
-                    frontDoor.style.cursor = "pointer"; //isto n está a fazer nada acho eu, o cursor está sempre pointer nessa porta
+                    frontDoor.style.cursor = "pointer";
                 }
-                // Pausa o jogo e a música
-                pauseGame();
-                // Exibe a mensagem do Fletcher – por exemplo, usando a função que já implementaste:
-                showFletcherPhrase('encoraje2');  // ou a chave da mensagem desejada
-                invitationHits = 0;
-                // Não prossegue com o restante do clique quando a mensagem estiver ativa
-                return;
-
-                /*const invitationMessages = getMessagesById("Invitation");
+                const invitationMessages = getMessagesById("Invitation");
 
                 if (invitationMessages.length > 0) {
                     const randomIndex = Math.floor(Math.random() * invitationMessages.length);
                     const index = messages.indexOf(invitationMessages[randomIndex]);
                     showMessageByIndex(index);
                 }
-                invitationHits = 0; // reset after displaying*/
+                invitationHits = 0; // reset after displaying
             }
         }
 

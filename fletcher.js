@@ -15,7 +15,7 @@ const fraseFletcher = {
 };
 
 // Seleciona os elementos do popup (neste caso, a barra inferior)
-const conteiner = document.getElementById('conteiner');
+const bar = document.getElementById('bottomBar');
 const content = document.getElementById('content');
 
 // Função para mostrar a mensagem de Fletcher com base em uma chave
@@ -31,18 +31,17 @@ export function showFletcherPhrase(key) {
             </div>
         `;
         // Exibe o container (barra inferior)
-        conteiner.classList.remove('hidden');
+        bar.classList.remove('hidden');
     }
 }
 
 // Função para esconder a barra
 export function hideFletcherPhrase() {
-    conteiner.classList.add('hidden');
+    bar.classList.add('hidden');
     content.innerHTML = "";
 }
 
 // Exemplo: Esconder mensagem ao clicar na própria barra
-conteiner.addEventListener('click', () => {
+bar.addEventListener('click', () => {
     hideFletcherPhrase();
-    resumeGame(); // Retoma o jogo e a música
 });

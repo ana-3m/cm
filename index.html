@@ -206,8 +206,8 @@
 
         <span id="doorIcon" class="material-symbols-outlined hidden" style="cursor: pointer">door_open</span>
     </div>
-    <div id="bottomBar" style="z-index: 5;">
-        <div id="conteiner" class="hidden">
+    <div id="bottomBar" class="hidden" style="z-index: 5;">
+        <div id="conteiner">
             <img src="img/angryFletcher.png" alt="Angry Fletcher">
             <div id="content">
             </div>
@@ -301,11 +301,16 @@
 
                 document.getElementById("doorIcon").classList.remove("hidden");
 
+                //showMessageByIndex(2);  // Try showing one directly
                 setDrumImage("img/drumSetDisplay1.png");
                 loadDetectorImage("img/detetorGrande1.png");
 
                 startCountdown();
             });
+            if (countdownFinished) {
+                showMessageByIndex(2);
+                //assim já n aparece no countdown mas acho q n aparece de todo hahaha
+            }
         };
 
         document.getElementById("doorIcon").addEventListener("click", () => {
@@ -359,28 +364,6 @@
         export function markCountdownFinished() {
             countdownFinished = true;
         }
-        //**************************TESTE*ANA**************************/
-        let gamePaused = false;
-
-        // Função para pausar o jogo: as bolas param de crescer e a música é pausada
-        function pauseGame() {
-            gamePaused = true;
-            // Chama um método do módulo de música para pausar o áudio
-            import('./music.js').then(module => {
-                module.pauseMusic();
-            });
-            console.log("Jogo pausado");
-        }
-
-        // Função para retomar o jogo: as bolas voltam a crescer e a música é reiniciada
-        function resumeGame() {
-            gamePaused = false;
-            import('./music.js').then(module => {
-                module.tryPlayMusic(selectedMusic);
-            });
-            console.log("Jogo retomado");
-        }
-        //**************************TESTE*ANA**************************/
 
         function selectMusic(musicName) {
             selectedMusic = musicName; // Guarda a escolha do jogador
