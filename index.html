@@ -206,8 +206,8 @@
 
         <span id="doorIcon" class="material-symbols-outlined hidden" style="cursor: pointer">door_open</span>
     </div>
-    <div id="bottomBar">
-        <div id="conteiner" class="hidden" style="z-index: 5;">
+    <div id="bottomBar" style="z-index: 5;">
+        <div id="conteiner" class="hidden">
             <img src="img/angryFletcher.png" alt="Angry Fletcher">
             <div id="content">
             </div>
@@ -219,13 +219,13 @@
     <script type="module" src="notas.js"></script>
     <script type="module">
 
-        //**********************************************fullscreen**********************************************
+        /**********************************************fullscreen**********************************************
         document.addEventListener("click", () => {
             document.documentElement.requestFullscreen().catch(err => {
                 console.warn("Erro ao tentar ativar fullscreen:", err);
             });
         });
-        //******************************************************************************************************
+        ******************************************************************************************************/
 
         import { resetVareta } from './erros.js';
         import { resetBlurryScreen } from './newerro.js';
@@ -360,6 +360,28 @@
         export function markCountdownFinished() {
             countdownFinished = true;
         }
+        //**************************TESTE*ANA**************************/
+        let gamePaused = false;
+
+        // Função para pausar o jogo: as bolas param de crescer e a música é pausada
+        function pauseGame() {
+            gamePaused = true;
+            // Chama um método do módulo de música para pausar o áudio
+            import('./music.js').then(module => {
+                module.pauseMusic();
+            });
+            console.log("Jogo pausado");
+        }
+
+        // Função para retomar o jogo: as bolas voltam a crescer e a música é reiniciada
+        function resumeGame() {
+            gamePaused = false;
+            import('./music.js').then(module => {
+                module.tryPlayMusic(selectedMusic);
+            });
+            console.log("Jogo retomado");
+        }
+        //**************************TESTE*ANA**************************/
 
         function selectMusic(musicName) {
             selectedMusic = musicName; // Guarda a escolha do jogador

@@ -44,4 +44,5 @@ export function hideFletcherPhrase() {
 // Exemplo: Esconder mensagem ao clicar na própria barra
 conteiner.addEventListener('click', () => {
     hideFletcherPhrase();
+    resumeGame(); // Retoma o jogo e a música
 });

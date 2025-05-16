@@ -40,6 +40,13 @@ export function tryPlayMusic(musicFile) {
     }
 }
 
+export function pauseMusic() {
+    if (currentAudio && !currentAudio.paused) {
+        currentAudio.pause();
+        console.log("Música pausada");
+    }
+}
+
 /*export function tryPlayMusic() {
     if (!musicStarted) {
         jazzAudio.play()
