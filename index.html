@@ -109,6 +109,99 @@
             left: 50vw;
             top: 75vh;
         }
+<<<<<<< HEAD
+=======
+
+
+        #musicSelection {
+            position: absolute;
+            top: 0;
+            left: 0;
+            z-index: 10;
+            /* Higher than any canvas */
+            background-color: rgba(0, 0, 0, 0.8);
+            width: 100%;
+            height: 100%;
+
+            flex-direction: row;
+            justify-content: center;
+            align-items: center;
+        }
+
+
+        #musicSelection button {
+            font-size: 24px;
+            padding: 10px 20px;
+            margin: 10px;
+            cursor: pointer;
+
+        #bottomBar {
+            position: fixed;
+            /* Fixa a barra ao fundo da página */
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 200px;
+        }
+
+        #conteiner {
+            position: relative;
+            height: 100%;
+        }
+
+        #content {
+            height: 100%;
+            width: 97%;
+            background-color: #be9058;
+            /* Fundo preto com 80% de opacidade */
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            font-family: Arial, sans-serif;
+            box-sizing: border-box;
+            padding: 0 15px;
+        }
+
+        #conteiner img {
+            position: absolute;
+            bottom: 0;
+            right: 0;
+            height: 500px;
+            /* Define a altura máxima da imagem */
+            width: auto;
+        }
+
+        #textF {
+            position: absolute;
+            top: 10%;
+            left: 5%;
+            font-size: 26px;
+            font-weight: bold;
+            color: #000000;
+        }
+
+        #continue {
+            position: absolute;
+            bottom: 5%;
+            left: 45%;
+            font-size: 14px;
+            color: #836137;
+
+        }
+
+        @media only screen and (max-width: 1000px) {
+
+            #bottomBar {
+                height: 100px;
+            }
+
+            #bottomBar img {
+                height: 300px;
+                width: auto;
+            }
+
+        }
+>>>>>>> 83f7d8671406841c5419bf969faa786b41d8ed9b
     </style>
 </head>
 
@@ -153,12 +246,50 @@
     <script type="module" src="notas.js"></script>
     <script type="module">
 
+<<<<<<< HEAD
         //**************************************fullscreen******************************************************
         document.addEventListener("click", () => {
             document.documentElement.requestFullscreen().catch(err => {
                 console.warn("Erro ao tentar ativar fullscreen:", err);
             });
         });
+=======
+let countdownFinished = false;
+        //**************************************fullscreen******************************************************
+
+        function toggleFullscreen() {
+            document.documentElement.requestFullscreen()
+                .then(() => {
+                    resizeAllCanvases();
+
+                    import('./notas.js').then(module => {
+                        module.initializeGreenSquares();
+                    });
+                    console.log("Fullscreen mode activated.");
+                })
+                .then(() => {
+                    isFullscreen = true;
+                })
+                .catch(err => console.warn("Erro ao tentar ativar fullscreen:", err));
+        }
+
+
+        async function resizeAllCanvases() {
+            const width = window.screen.width;
+            const height = window.screen.height;
+
+            // Apply this to all canvases
+            await document.querySelectorAll("canvas").forEach(canvas => {
+                if (canvas.id === "introCanvas") return;
+                canvas.width = width;
+                canvas.height = height;
+            });
+        }
+
+
+
+
+>>>>>>> 83f7d8671406841c5419bf969faa786b41d8ed9b
 
         import { resetVareta } from './erros.js';
         import { resetBlurryScreen } from './newerro.js';
@@ -166,6 +297,14 @@
         import { setDrumImage, setInvitationMode, sendUserBackToIntro, markCountdownFinished} from './notas.js';
         import { loadDetectorImage } from './detetor.js';
         import { showMessageByIndex } from './js/messages.js';
+<<<<<<< HEAD
+=======
+
+        import {tryPlayMusic } from './music.js';
+
+        import { showFletcherPhrase, hideFletcherPhrase } from './fletcher.js';
+
+>>>>>>> 83f7d8671406841c5419bf969faa786b41d8ed9b
         export let frontDoorUnlocked = false;
         let selectedMusic = null;
 
@@ -195,8 +334,18 @@
         window.frontDoor = () => {
             if (document.getElementById("frontDoor").classList.contains("locked")) {
                 console.log("Front door is locked.");
+<<<<<<< HEAD
                 // Optional: visual feedback
                 alert("You must complete the left room first!");
+=======
+
+
+                alert("You must complete the left room first!");
+
+                // Optional: visual feedback
+                showFletcherPhrase('lockedDoor');
+
+>>>>>>> 83f7d8671406841c5419bf969faa786b41d8ed9b
                 return;
             }
             setInvitationMode(false);
@@ -232,6 +381,11 @@
                 document.getElementById("grid").classList.remove("hidden");
                 document.getElementById("doorIcon").classList.remove("hidden");
 
+<<<<<<< HEAD
+=======
+                loadDetectorImage("img/detetorGrande.png");
+
+>>>>>>> 83f7d8671406841c5419bf969faa786b41d8ed9b
                 setDrumImage("img/drumSetDisplay1.png");
                 const musics = [
                     './sound/hipjazz.mp3',
@@ -246,10 +400,8 @@
                     tryPlayMusic(randomMusic);
                 }, 3500);
             });
-            if (countdownFinished) {
-                showMessageByIndex(2);
                 //assim já n aparece no countdown mas acho q n aparece de todo hahaha
-            }
+
         };
 
         document.getElementById("doorIcon").addEventListener("click", () => {
