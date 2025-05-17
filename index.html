@@ -47,13 +47,13 @@
 
         #gameCanvas,
         #gameDetetor {
-            z-index: 2;
+            z-index: 99;
             width: 100%;
             height: 100%;
         }
 
         #erro {
-            z-index: 2;
+            z-index: 101;
             pointer-events: none;
         }
 
@@ -95,7 +95,7 @@
             right: 10px;
             font-size: 48px;
             color: #BC7D30;
-            z-index: 5;
+            z-index: 100;
         }
 
         #countdownNumber {
@@ -108,72 +108,6 @@
             z-index: 100;
             left: 50vw;
             top: 75vh;
-        }
-
-        #bottomBar {
-            position: fixed;
-            /* Fixa a barra ao fundo da página */
-            bottom: 0;
-            left: 0;
-            width: 100%;
-            height: 200px;
-        }
-
-        #conteiner {
-            position: relative;
-            height: 100%;
-        }
-
-        #content {
-            height: 100%;
-            width: 97%;
-            background-color: #be9058;
-            /* Fundo preto com 80% de opacidade */
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            font-family: Arial, sans-serif;
-            box-sizing: border-box;
-            padding: 0 15px;
-        }
-
-        #conteiner img {
-            position: absolute;
-            bottom: 0;
-            right: 0;
-            height: 500px;
-            /* Define a altura máxima da imagem */
-            width: auto;
-        }
-
-        #textF {
-            position: absolute;
-            top: 10%;
-            left: 5%;
-            font-size: 26px;
-            font-weight: bold;
-            color: #000000;
-        }
-
-        #continue {
-            position: absolute;
-            bottom: 5%;
-            left: 45%;
-            font-size: 14px;
-            color: #836137;
-
-        }
-
-        @media only screen and (max-width: 1000px) {
-
-            #bottomBar {
-                height: 100px;
-            }
-
-            #bottomBar img {
-                height: 300px;
-                width: auto;
-            }
         }
     </style>
 </head>
@@ -200,7 +134,7 @@
         <canvas id="gameDetetor"></canvas>
         <canvas id="erro" class="hidden"></canvas>
 
-        <canvas id="messageCanvas" style="z-index: 3;"></canvas>
+        <canvas id="messageCanvas" style="z-index: 103; pointer-events:none ;"></canvas>
         <div class="grid-container" id="grid"></div>
         <div id="countdownNumber" class="hidden grid-item"></div>
 
@@ -219,43 +153,42 @@
     <script type="module" src="notas.js"></script>
     <script type="module">
 
-        /**********************************************fullscreen**********************************************
+        //**************************************fullscreen******************************************************
         document.addEventListener("click", () => {
             document.documentElement.requestFullscreen().catch(err => {
                 console.warn("Erro ao tentar ativar fullscreen:", err);
             });
         });
-        ******************************************************************************************************/
 
         import { resetVareta } from './erros.js';
         import { resetBlurryScreen } from './newerro.js';
         import { resetPulsingBlur } from './newerro2.js';
-        import { setDrumImage, setInvitationMode, sendUserBackToIntro } from './notas.js';
+        import { setDrumImage, setInvitationMode, sendUserBackToIntro, markCountdownFinished} from './notas.js';
         import { loadDetectorImage } from './detetor.js';
         import { showMessageByIndex } from './js/messages.js';
-        import { showFletcherPhrase, hideFletcherPhrase } from './fletcher.js';
         export let frontDoorUnlocked = false;
         let selectedMusic = null;
 
-        window.leftDoor = () => {
-            setInvitationMode(true);
 
-            setDrumImage("img/drumSetPlayfull.png");
-            loadDetectorImage("img/playfulDetector.png");
+        document.getElementById("sound1").addEventListener("click", () => {
+            handleMusicSelection('./sound/hipjazz.mp3');
+        });
+        document.getElementById("sound2").addEventListener("click", () => {
+            handleMusicSelection('./sound/thejazzpiano.mp3');
+        });
+        document.getElementById("sound3").addEventListener("click", () => {
+            handleMusicSelection('./sound/thelounge.mp3');
+        });
+        let isFullscreen = false;
+
+
+        window.leftDoor = () => {
+            if (!isFullscreen) {
+                toggleFullscreen();
+            }
+            setInvitationMode(true);
             document.getElementById("intro").classList.add("hidden");
             document.getElementById("musicSelection").classList.remove("hidden");
-
-
-            document.getElementById("sound1").addEventListener("click", function () {
-                selectMusic('./sound/hipjazz.mp3');
-            });
-            document.getElementById("sound2").addEventListener("click", function () {
-                selectMusic('./sound/thejazzpiano.mp3');
-            });
-            document.getElementById("sound3").addEventListener("click", function () {
-                selectMusic('./sound/thelounge.mp3');
-            });
-
             document.getElementById("doorIcon").classList.remove("hidden");
         };
 
@@ -263,7 +196,7 @@
             if (document.getElementById("frontDoor").classList.contains("locked")) {
                 console.log("Front door is locked.");
                 // Optional: visual feedback
-                showFletcherPhrase('lockedDoor');
+                alert("You must complete the left room first!");
                 return;
             }
             setInvitationMode(false);
@@ -290,7 +223,6 @@
             document.getElementById("grid").classList.add("hidden");
 
             video.addEventListener("ended", () => {
-
                 video.classList.add("hidden");
                 document.getElementById("gameCanvas").classList.remove("hidden");
                 document.getElementById("mensagens").classList.remove("hidden");
@@ -298,14 +230,21 @@
                 document.getElementById("erro").classList.remove("hidden");
                 document.getElementById("messageCanvas").classList.remove("hidden");
                 document.getElementById("grid").classList.remove("hidden");
-
                 document.getElementById("doorIcon").classList.remove("hidden");
 
-                //showMessageByIndex(2);  // Try showing one directly
                 setDrumImage("img/drumSetDisplay1.png");
-                loadDetectorImage("img/detetorGrande1.png");
-
+                const musics = [
+                    './sound/hipjazz.mp3',
+                    './sound/thejazzpiano.mp3',
+                    './sound/thelounge.mp3'
+                ];
+                const randomIndex = Math.floor(Math.random() * musics.length);
+                const randomMusic = musics[randomIndex];
                 startCountdown();
+                setTimeout(() => {
+                    markCountdownFinished();
+                    tryPlayMusic(randomMusic);
+                }, 3500);
             });
             if (countdownFinished) {
                 showMessageByIndex(2);
@@ -346,14 +285,6 @@
                         countdownEl.classList.add("hidden");
                         grid.classList.add("hidden");
 
-                        import('./notas.js').then(module => {
-                            module.markCountdownFinished();
-                            module.initializeGreenSquares();
-                            module.gameLoop();
-                            import('./music.js').then(module => {
-                                module.tryPlayMusic(selectedMusic); // Passa a escolha para `music.js`
-                            });
-                        });
                     }, 1000);
                 }
             }
@@ -361,22 +292,37 @@
             showNext();
         }
 
-        export function markCountdownFinished() {
-            countdownFinished = true;
-        }
+
 
         function selectMusic(musicName) {
-            selectedMusic = musicName; // Guarda a escolha do jogador
-            document.getElementById("musicSelection").classList.add("hidden"); // Esconde o menu após a escolha
+            selectedMusic = musicName;
+            document.getElementById("musicSelection").classList.add("hidden");
             document.getElementById("game").classList.remove("hidden");
 
-            console.log("Música escolhida:", selectedMusic); // Verifica no console
+            // Optional: disable buttons to avoid re-selection
+            document.querySelectorAll("#musicSelection button").forEach(btn => btn.disabled = true);
+
+            console.log("Música escolhida:", selectedMusic);
 
             import('./music.js').then(module => {
-                module.tryPlayMusic(selectedMusic); // Passa a escolha para `music.js`
+                module.tryPlayMusic(selectedMusic);
             });
         }
 
+        function handleMusicSelection(musicPath) {
+            selectedMusic = musicPath;
+
+            document.getElementById("musicSelection").classList.add("hidden");
+            document.getElementById("game").classList.remove("hidden");
+
+            setDrumImage("img/drumSetPlayfull.png");
+            loadDetectorImage("img/playfulDetector.png");
+
+            // Start music playback
+            import('./music.js').then(module => {
+                module.tryPlayMusic(selectedMusic);
+            });
+        }
 
     </script>
 
