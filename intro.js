@@ -10,7 +10,7 @@ const canvas = intro.getContext("2d");
 // Define the aspect ratio of the video
 const videoAspectRatio = 16 / 9; // Assuming the video has a 16:9 aspect ratio
 
-async function drawIntro() {
+export async function drawIntro() {
     // Calculate the new dimensions for the canvas based on the video aspect ratio
     const windowAspectRatio = innerWidth / innerHeight;
 
@@ -26,7 +26,7 @@ async function drawIntro() {
 
     // Clear and draw the hall image
     canvas.clearRect(0, 0, intro.width, intro.height);
-    canvas.drawImage(hall, 0, 0, intro.width, intro.height);
+    await canvas.drawImage(hall, 0, 0, intro.width, intro.height);
 }
 
 // Wait for the image to load before drawing

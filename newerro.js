@@ -27,5 +27,6 @@ export async function drawBlurryScreen() {
 
 export function resetBlurryScreen() {
     opacity = 0; // Reset opacity
-    erro.clearRect(0, 0, canvas.width, canvas.height);
+    const erroCanvas = document.getElementById("erro");
+    erroCanvas.getContext("2d").clearRect(0, 0, erroCanvas.width, erroCanvas.height);
 }

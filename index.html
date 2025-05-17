@@ -47,13 +47,13 @@
 
         #gameCanvas,
         #gameDetetor {
-            z-index: 2;
+            z-index: 99;
             width: 100%;
             height: 100%;
         }
 
         #erro {
-            z-index: 2;
+            z-index: 101;
             pointer-events: none;
         }
 
@@ -95,7 +95,7 @@
             right: 10px;
             font-size: 48px;
             color: #BC7D30;
-            z-index: 5;
+            z-index: 100;
         }
 
         #countdownNumber {
@@ -108,6 +108,31 @@
             z-index: 100;
             left: 50vw;
             top: 75vh;
+        }
+
+
+
+        #musicSelection {
+            position: absolute;
+            top: 0;
+            left: 0;
+            z-index: 10;
+            /* Higher than any canvas */
+            background-color: rgba(0, 0, 0, 0.8);
+            width: 100%;
+            height: 100%;
+
+            flex-direction: row;
+            justify-content: center;
+            align-items: center;
+        }
+
+
+        #musicSelection button {
+            font-size: 24px;
+            padding: 10px 20px;
+            margin: 10px;
+            cursor: pointer;
         }
 
         #bottomBar {
@@ -191,6 +216,22 @@
             opacity: 1;
             transition: opacity 1s ease-in-out;
         }
+
+        #cenaInicial {
+            z-index: 10;
+            background-color: #613213;
+            position: fixed;
+            width: 100%;
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 24px;
+            text-align: center;
+            opacity: 1;
+            transition: opacity 1s ease-in-out;
+        }
     </style>
 </head>
 
@@ -221,7 +262,7 @@
         <canvas id="gameDetetor"></canvas>
         <canvas id="erro" class="hidden"></canvas>
 
-        <canvas id="messageCanvas" style="z-index: 3;"></canvas>
+        <canvas id="messageCanvas" style="z-index: 103; pointer-events:none ;"></canvas>
         <div class="grid-container" id="grid"></div>
         <div id="countdownNumber" class="hidden grid-item"></div>
 
@@ -240,167 +281,197 @@
     <script type="module" src="notas.js"></script>
     <script type="module">
 
-        /**********************************************fullscreen**********************************************
-        document.addEventListener("click", () => {
-            document.documentElement.requestFullscreen().catch(err => {
-                console.warn("Erro ao tentar ativar fullscreen:", err);
+        let countdownFinished = false;
+
+        //**************************************fullscreen******************************************************
+        function toggleFullscreen() {
+            document.documentElement.requestFullscreen()
+                .then(() => {
+                    resizeAllCanvases();
+
+                    import('./notas.js').then(module => {
+                        module.initializeGreenSquares();
+                    });
+                    console.log("Fullscreen mode activated.");
+                })
+                .then(() => {
+                    isFullscreen = true;
+                })
+                .catch(err => console.warn("Erro ao tentar ativar fullscreen:", err));
+        }
+
+
+        async function resizeAllCanvases() {
+            const width = window.screen.width;
+            const height = window.screen.height;
+
+            // Apply this to all canvases
+            await document.querySelectorAll("canvas").forEach(canvas => {
+                if (canvas.id === "introCanvas") return;
+                canvas.width = width;
+                canvas.height = height;
             });
-        });
-        ******************************************************************************************************/
+        }
 
         import { resetVareta } from './erros.js';
         import { resetBlurryScreen } from './newerro.js';
         import { resetPulsingBlur } from './newerro2.js';
-        import { setDrumImage, setInvitationMode, sendUserBackToIntro } from './notas.js';
+        import { setDrumImage, setInvitationMode, sendUserBackToIntro, markCountdownFinished } from './notas.js';
         import { loadDetectorImage } from './detetor.js';
         import { showMessageByIndex } from './js/messages.js';
+        import { tryPlayMusic } from './music.js';
+
         import { showFletcherPhrase, hideFletcherPhrase } from './fletcher.js';
+
+
         import { start } from './cenaInicial.js';
         export let frontDoorUnlocked = false;
         let selectedMusic = null;
-
         document.addEventListener("click", start);
-        
+
         window.leftDoor = () => {
+            if (!isFullscreen) {
+                toggleFullscreen();
+            }
             setInvitationMode(true);
-
-            setDrumImage("img/drumSetPlayfull.png");
-            loadDetectorImage("img/playfulDetector.png");
-            document.getElementById("intro").classList.add("hidden");
-            document.getElementById("musicSelection").classList.remove("hidden");
-
-
-            document.getElementById("sound1").addEventListener("click", function () {
-                selectMusic('./sound/hipjazz.mp3');
+            document.getElementById("sound1").addEventListener("click", () => {
+                handleMusicSelection('./sound/hipjazz.mp3');
             });
-            document.getElementById("sound2").addEventListener("click", function () {
-                selectMusic('./sound/thejazzpiano.mp3');
+            document.getElementById("sound2").addEventListener("click", () => {
+                handleMusicSelection('./sound/thejazzpiano.mp3');
             });
-            document.getElementById("sound3").addEventListener("click", function () {
-                selectMusic('./sound/thelounge.mp3');
+            document.getElementById("sound3").addEventListener("click", () => {
+                handleMusicSelection('./sound/thelounge.mp3');
             });
+            let isFullscreen = false;
 
-            document.getElementById("doorIcon").classList.remove("hidden");
-        };
-
-        window.frontDoor = () => {
-            if (document.getElementById("frontDoor").classList.contains("locked")) {
-                console.log("Front door is locked.");
-                // Optional: visual feedback
-                showFletcherPhrase('lockedDoor');
-                return;
-            }
-            setInvitationMode(false);
-            console.log("frontDoor");
-
-            document.getElementById("intro").classList.add("hidden");
-            document.getElementById("game").classList.remove("hidden");
-
-            // Show the video and hide other elements
-            const video = document.getElementById("introVideo");
-            video.classList.remove("hidden");
-            video.play();
-            video.removeAttribute("controls");
-
-            document.getElementById("gameCanvas").classList.add("hidden");
-            document.getElementById("mensagens").classList.add("hidden");
-            document.getElementById("gameDetetor").classList.add("hidden");
-            document.getElementById("erro").classList.add("hidden");
-            resetVareta();
-            resetBlurryScreen();
-            resetPulsingBlur();
-
-            document.getElementById("messageCanvas").classList.add("hidden");
-            document.getElementById("grid").classList.add("hidden");
-
-            video.addEventListener("ended", () => {
-
-                video.classList.add("hidden");
-                document.getElementById("gameCanvas").classList.remove("hidden");
-                document.getElementById("mensagens").classList.remove("hidden");
-                document.getElementById("gameDetetor").classList.remove("hidden");
-                document.getElementById("erro").classList.remove("hidden");
-                document.getElementById("messageCanvas").classList.remove("hidden");
-                document.getElementById("grid").classList.remove("hidden");
-
+            window.leftDoor = () => {
+                if (!isFullscreen) {
+                    toggleFullscreen();
+                }
+                setInvitationMode(true);
+                document.getElementById("intro").classList.add("hidden");
+                document.getElementById("musicSelection").classList.remove("hidden");
                 document.getElementById("doorIcon").classList.remove("hidden");
+            };
 
-                //showMessageByIndex(2);  // Try showing one directly
-                setDrumImage("img/drumSetDisplay1.png");
-                loadDetectorImage("img/detetorGrande1.png");
+            window.frontDoor = () => {
+                if (document.getElementById("frontDoor").classList.contains("locked")) {
+                    showFletcherPhrase('lockedDoor');
+                    return;
+                }
+                setInvitationMode(false);
+                console.log("frontDoor");
 
-                startCountdown();
-            });
-            if (countdownFinished) {
-                showMessageByIndex(2);
-                //assim já n aparece no countdown mas acho q n aparece de todo hahaha
-            }
-        };
+                document.getElementById("intro").classList.add("hidden");
+                document.getElementById("game").classList.remove("hidden");
 
-        document.getElementById("doorIcon").addEventListener("click", () => {
-            sendUserBackToIntro();
-        });
+                // Show the video and hide other elements
+                const video = document.getElementById("introVideo");
+                video.classList.remove("hidden");
+                video.play();
+                video.removeAttribute("controls");
 
-        function startCountdown() {
-            const grid = document.getElementById("grid");
-            const countdownEl = document.getElementById("countdownNumber");
+                document.getElementById("gameCanvas").classList.add("hidden");
+                document.getElementById("mensagens").classList.add("hidden");
+                document.getElementById("gameDetetor").classList.add("hidden");
+                document.getElementById("erro").classList.add("hidden");
+                resetVareta();
+                resetBlurryScreen();
+                resetPulsingBlur();
 
-            grid.classList.remove("hidden");
-            countdownEl.classList.remove("hidden");
+                document.getElementById("messageCanvas").classList.add("hidden");
+                document.getElementById("grid").classList.add("hidden");
 
-            const sequence = [
-                { number: "3", col: 1, row: 3 },
-                { number: "2", col: 6, row: 5 },
-                { number: "1", col: 10, row: 3 },
-            ];
+video.addEventListener("ended", () => {
+                    video.classList.add("hidden");
+                    document.getElementById("gameCanvas").classList.remove("hidden");
+                    document.getElementById("mensagens").classList.remove("hidden");
+                    document.getElementById("gameDetetor").classList.remove("hidden");
+                    document.getElementById("erro").classList.remove("hidden");
+                    document.getElementById("messageCanvas").classList.remove("hidden");
+                    document.getElementById("grid").classList.remove("hidden");
+                    document.getElementById("doorIcon").classList.remove("hidden");
 
-            let index = 0;
-
-            function showNext() {
-                const item = sequence[index];
-                countdownEl.textContent = item.number;
-                countdownEl.style.gridColumn = item.col;
-                countdownEl.style.gridRow = item.row;
-
-                index++;
-                if (index < sequence.length) {
-                    setTimeout(showNext, 1000);
-                } else {
+                    //showMessageByIndex(2);  // Try showing one directly
+                    setDrumImage("img/drumSetDisplay1.png");
+                    const musics = [
+                        './sound/hipjazz.mp3',
+                        './sound/thejazzpiano.mp3',
+                        './sound/thelounge.mp3'
+                    ];
+                    const randomIndex = Math.floor(Math.random() * musics.length);
+                    const randomMusic = musics[randomIndex];
+                    startCountdown();
                     setTimeout(() => {
-                        countdownEl.classList.add("hidden");
-                        grid.classList.add("hidden");
+                        markCountdownFinished();
+                        tryPlayMusic(randomMusic);
+                    }, 3500);
+                });
+                if (countdownFinished) {
+                    showMessageByIndex(2);
+                    //assim já n aparece no countdown mas acho q n aparece de todo hahaha
 
-                        import('./notas.js').then(module => {
-                            module.markCountdownFinished();
-                            module.initializeGreenSquares();
-                            module.gameLoop();
-                            import('./music.js').then(module => {
-                                module.tryPlayMusic(selectedMusic); // Passa a escolha para `music.js`
-                            });
-                        });
-                    }, 1000);
+                };
+
+                document.getElementById("doorIcon").addEventListener("click", () => {
+                    sendUserBackToIntro();
+                });
+
+                function startCountdown() {
+                    const grid = document.getElementById("grid");
+                    const countdownEl = document.getElementById("countdownNumber");
+
+                    grid.classList.remove("hidden");
+                    countdownEl.classList.remove("hidden");
+
+                    const sequence = [
+                        { number: "3", col: 1, row: 3 },
+                        { number: "2", col: 6, row: 5 },
+                        { number: "1", col: 10, row: 3 },
+                    ];
+
+                    let index = 0;
+
+                    function showNext() {
+                        const item = sequence[index];
+                        countdownEl.textContent = item.number;
+                        countdownEl.style.gridColumn = item.col;
+                        countdownEl.style.gridRow = item.row;
+
+                        index++;
+                        if (index < sequence.length) {
+                            setTimeout(showNext, 1000);
+                        } else {
+                            setTimeout(() => {
+                                countdownEl.classList.add("hidden");
+                                grid.classList.add("hidden");
+
+                            }, 1000);
+                        }
+                    }
+
+                    showNext();
+                }
+
+
+
+                function selectMusic(musicName) {
+                    selectedMusic = musicName;
+                    document.getElementById("musicSelection").classList.add("hidden");
+                    document.getElementById("game").classList.remove("hidden");
+
+                    // Optional: disable buttons to avoid re-selection
+                    document.querySelectorAll("#musicSelection button").forEach(btn => btn.disabled = true);
+
+                    console.log("Música escolhida:", selectedMusic);
+
+                    import('./music.js').then(module => {
+                        module.tryPlayMusic(selectedMusic); // Passa a escolha para `music.js`
+                    });
                 }
             }
-
-            showNext();
         }
-
-        export function markCountdownFinished() {
-            countdownFinished = true;
-        }
-
-        function selectMusic(musicName) {
-            selectedMusic = musicName; // Guarda a escolha do jogador
-            document.getElementById("musicSelection").classList.add("hidden"); // Esconde o menu após a escolha
-            document.getElementById("game").classList.remove("hidden");
-
-            console.log("Música escolhida:", selectedMusic); // Verifica no console
-
-            import('./music.js').then(module => {
-                module.tryPlayMusic(selectedMusic); // Passa a escolha para `music.js`
-            });
-        }
-
 
     </script>
 
