@@ -1,4 +1,5 @@
 const intro = document.querySelector('#introCanvas');
+//import { tryPlayMusic } from "./music";
 
 const hall = new Image();
 hall.src = "img/entrada.png";
@@ -32,4 +33,5 @@ export async function drawIntro() {
 // Wait for the image to load before drawing
 hall.onload = () => {
     drawIntro();
+    //tryPlayMusic("./FletcherClass")
 };

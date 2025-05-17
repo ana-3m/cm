@@ -207,30 +207,18 @@
             position: fixed;
             width: 100%;
             height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-size: 24px;
-            text-align: center;
-            opacity: 1;
-            transition: opacity 1s ease-in-out;
         }
 
-        #cenaInicial {
-            z-index: 10;
-            background-color: #613213;
-            position: fixed;
-            width: 100%;
+        #cenaInicial div {
             height: 100vh;
             display: flex;
             align-items: center;
             justify-content: center;
+            font-size: 10vw;
+            font-weight: bold;
             color: white;
-            font-size: 24px;
             text-align: center;
-            opacity: 1;
-            transition: opacity 1s ease-in-out;
+            /*transition: opacity 1s ease-in-out;*/
         }
     </style>
 </head>
@@ -238,9 +226,11 @@
 <body>
     <!--  <h1>Whiplash Drum Game</h1> -->
     <div id="cenaInicial">
+        <div>
         <p id="introText1" class="hidden">You're gonna be the greatest.</p>
         <p id="introText2" class="hidden">But there's a price for that.</p>
-        <p id="welcome" class="hidden">Welcome to the Whiplash Experience.</p>
+        <p id="welcome" class="hidden">Welcome to the Whiplash experience.</p>
+        </div>
     </div>
     <div id="intro" class="hidden">
         <canvas id="introCanvas"></canvas>
@@ -327,6 +317,7 @@
         import { start } from './cenaInicial.js';
         export let frontDoorUnlocked = false;
         let selectedMusic = null;
+
         document.addEventListener("click", start);
 
         window.leftDoor = () => {
@@ -383,7 +374,7 @@
                 document.getElementById("messageCanvas").classList.add("hidden");
                 document.getElementById("grid").classList.add("hidden");
 
-video.addEventListener("ended", () => {
+                video.addEventListener("ended", () => {
                     video.classList.add("hidden");
                     document.getElementById("gameCanvas").classList.remove("hidden");
                     document.getElementById("mensagens").classList.remove("hidden");
