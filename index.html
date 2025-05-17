@@ -110,6 +110,7 @@
             top: 75vh;
         }
 
+
         #musicSelection {
             position: absolute;
             top: 0;
@@ -131,6 +132,72 @@
             padding: 10px 20px;
             margin: 10px;
             cursor: pointer;
+
+        #bottomBar {
+            position: fixed;
+            /* Fixa a barra ao fundo da página */
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 200px;
+        }
+
+        #conteiner {
+            position: relative;
+            height: 100%;
+        }
+
+        #content {
+            height: 100%;
+            width: 97%;
+            background-color: #be9058;
+            /* Fundo preto com 80% de opacidade */
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            font-family: Arial, sans-serif;
+            box-sizing: border-box;
+            padding: 0 15px;
+        }
+
+        #conteiner img {
+            position: absolute;
+            bottom: 0;
+            right: 0;
+            height: 500px;
+            /* Define a altura máxima da imagem */
+            width: auto;
+        }
+
+        #textF {
+            position: absolute;
+            top: 10%;
+            left: 5%;
+            font-size: 26px;
+            font-weight: bold;
+            color: #000000;
+        }
+
+        #continue {
+            position: absolute;
+            bottom: 5%;
+            left: 45%;
+            font-size: 14px;
+            color: #836137;
+
+        }
+
+        @media only screen and (max-width: 1000px) {
+
+            #bottomBar {
+                height: 100px;
+            }
+
+            #bottomBar img {
+                height: 300px;
+                width: auto;
+            }
+
         }
     </style>
 </head>
@@ -162,6 +229,13 @@
         <div id="countdownNumber" class="hidden grid-item"></div>
 
         <span id="doorIcon" class="material-symbols-outlined hidden" style="cursor: pointer">door_open</span>
+    </div>
+    <div id="bottomBar" class="hidden" style="z-index: 5;">
+        <div id="conteiner">
+            <img src="img/angryFletcher.png" alt="Angry Fletcher">
+            <div id="content">
+            </div>
+        </div>
     </div>
 
     <!-- JAVASCRIPT -->
@@ -203,13 +277,19 @@ let countdownFinished = false;
 
 
 
+
+
         import { resetVareta } from './erros.js';
         import { resetBlurryScreen } from './newerro.js';
         import { resetPulsingBlur } from './newerro2.js';
         import { setDrumImage, setInvitationMode, sendUserBackToIntro, markCountdownFinished} from './notas.js';
         import { loadDetectorImage } from './detetor.js';
         import { showMessageByIndex } from './js/messages.js';
+
         import {tryPlayMusic } from './music.js';
+
+        import { showFletcherPhrase, hideFletcherPhrase } from './fletcher.js';
+
         export let frontDoorUnlocked = false;
         let selectedMusic = null;
 
@@ -240,7 +320,12 @@ let countdownFinished = false;
             if (document.getElementById("frontDoor").classList.contains("locked")) {
                 console.log("Front door is locked.");
 
+
                 alert("You must complete the left room first!");
+
+                // Optional: visual feedback
+                showFletcherPhrase('lockedDoor');
+
                 return;
             }
             setInvitationMode(false);
@@ -275,7 +360,9 @@ let countdownFinished = false;
                 document.getElementById("messageCanvas").classList.remove("hidden");
                 document.getElementById("grid").classList.remove("hidden");
                 document.getElementById("doorIcon").classList.remove("hidden");
+
                 loadDetectorImage("img/detetorGrande.png");
+
                 setDrumImage("img/drumSetDisplay1.png");
                 const musics = [
                     './sound/hipjazz.mp3',
@@ -290,6 +377,8 @@ let countdownFinished = false;
                     tryPlayMusic(randomMusic);
                 }, 3500);
             });
+                //assim já n aparece no countdown mas acho q n aparece de todo hahaha
+
         };
 
         document.getElementById("doorIcon").addEventListener("click", () => {
