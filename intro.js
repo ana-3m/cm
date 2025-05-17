@@ -1,5 +1,5 @@
 const intro = document.querySelector('#introCanvas');
-//import { tryPlayMusic } from "./music";
+import { tryPlayMusic } from "./music";
 
 const hall = new Image();
 hall.src = "img/entrada.png";
@@ -28,10 +28,11 @@ export async function drawIntro() {
     // Clear and draw the hall image
     canvas.clearRect(0, 0, intro.width, intro.height);
     await canvas.drawImage(hall, 0, 0, intro.width, intro.height);
+    //tryPlayMusic("./sound/FletcherClass.wav");
 }
 
 // Wait for the image to load before drawing
 hall.onload = () => {
     drawIntro();
-    //tryPlayMusic("./FletcherClass")
+    tryPlayMusic("./sound/FletcherClass.wav");
 };
