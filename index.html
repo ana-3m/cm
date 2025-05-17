@@ -169,6 +169,7 @@
     <script type="module" src="notas.js"></script>
     <script type="module">
 
+let countdownFinished = false;
         //**************************************fullscreen******************************************************
 
         function toggleFullscreen() {
@@ -205,9 +206,10 @@
         import { resetVareta } from './erros.js';
         import { resetBlurryScreen } from './newerro.js';
         import { resetPulsingBlur } from './newerro2.js';
-        import { setDrumImage, setInvitationMode, sendUserBackToIntro } from './notas.js';
+        import { setDrumImage, setInvitationMode, sendUserBackToIntro, markCountdownFinished} from './notas.js';
         import { loadDetectorImage } from './detetor.js';
         import { showMessageByIndex } from './js/messages.js';
+        import {tryPlayMusic } from './music.js';
         export let frontDoorUnlocked = false;
         let selectedMusic = null;
 
@@ -275,12 +277,18 @@
                 document.getElementById("doorIcon").classList.remove("hidden");
                 loadDetectorImage("img/detetorGrande.png");
                 setDrumImage("img/drumSetDisplay1.png");
+                const musics = [
+                    './sound/hipjazz.mp3',
+                    './sound/thejazzpiano.mp3',
+                    './sound/thelounge.mp3'
+                ];
+                const randomIndex = Math.floor(Math.random() * musics.length);
+                const randomMusic = musics[randomIndex];
                 startCountdown();
                 setTimeout(() => {
-                    import('./notas.js').then(module => {
-                        module.markCountdownFinished();
-                    });
-                }, 3000);
+                    markCountdownFinished();
+                    tryPlayMusic(randomMusic);
+                }, 3500);
             });
         };
 
@@ -324,9 +332,7 @@
             showNext();
         }
 
-        export function markCountdownFinished() {
-            countdownFinished = true;
-        }
+
 
         function selectMusic(musicName) {
             selectedMusic = musicName;

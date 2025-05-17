@@ -91,7 +91,6 @@ function update(index) {
                 consecutiveHits = 0;
                 fadeOutMusicAfterDelay();
                 maxRadiusReached++;
-                if (!invitationMode) updateBackgroundColor();
                 step++;
                 mudarIndexMessage = true;
                 if (invitationMode) {
@@ -118,7 +117,7 @@ const startColor = { r: 97, g: 50, b: 19 };
 const endColor = { r: 29, g: 28, b: 27 };
 
 function updateBackgroundColor() {
-    const clamped = Math.min(Math.max(maxRadiusReached, 0), 6); // Clamp from 0 to 6
+
     const t = map(maxRadiusReached, 0, errorTrigger, 0, 1);
     const lerpedColor = lerpColor(startColor, endColor, t);
     document.body.style.backgroundColor = lerpedColor;
@@ -130,6 +129,14 @@ async function draw() {
     ctx.filter = "drop-shadow(0px -3px 0px rgba(29, 29, 29, 0.3))";
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     ctx.drawImage(drumSet, 0, 0, canvas.width, canvas.height);
+    ctx.save();
+ctx.fillStyle = "lime";
+greenSquares.forEach(sq => {
+    ctx.beginPath();
+    ctx.arc(sq.x, sq.y, 7, 0, Math.PI * 2);
+    ctx.fill();
+});
+ctx.restore();
     ctx.fillStyle = "red";
     //if (!countdownFinished && !invitationMode) return;
     switchBubble = false;
@@ -141,10 +148,11 @@ async function draw() {
     }
 
     ctx.filter = "none";
-    if (greenSquares.length > 0 && greenSquares[numCirc]) {
+    if (greenSquares.length > 0 && greenSquares[numCirc] && (invitationMode || countdownFinished)) {
         ctx.beginPath();
         ctx.arc(greenSquares[numCirc].x, greenSquares[numCirc].y, greenSquares[numCirc].radius, 0, Math.PI * 2);
         ctx.fill();
+
         // Update volume based on radius
         setVolumeFromRadius(greenSquares[numCirc].radius, maxRadius);
     } else {
@@ -152,31 +160,32 @@ async function draw() {
         return;
     }
 
-
-    if (!invitationMode && maxRadiusReached % sentenceTrigger === 0 && maxRadiusReached > 0) {
-        if (mudarIndexMessage) {
-            let reprimendMessages = getMessagesById("Encouragement");
-            console.log("Im in");
-            if (reprimendMessages.length > 0 && countdownFinished) {
-                const randomIndex = Math.floor(Math.random() * reprimendMessages.length);
-                messageIndex = messages.indexOf(reprimendMessages[randomIndex]);
-                showMessageByIndex(messageIndex);
-                console.log("Message index:", messageIndex);
-            }
-            mudarIndexMessage = await false;
+    if (mainRoom) {
+        if (maxRadiusReached % errorTrigger === 0 && maxRadiusReached > 0) {
+            triggerErroAnimation();
+            mudarIndexMessage = true;
         }
-    } else showMessageByIndex(messageIndex);
+        updateBackgroundColor();
+        if (maxRadiusReached % sentenceTrigger === 0 && maxRadiusReached > 0) {
+            if (mudarIndexMessage) {
+                let reprimendMessages = getMessagesById("Encouragement");
+                console.log("Im in");
+                if (reprimendMessages.length > 0 && countdownFinished) {
+                    const randomIndex = Math.floor(Math.random() * reprimendMessages.length);
+                    messageIndex = messages.indexOf(reprimendMessages[randomIndex]);
+                    showMessageByIndex(messageIndex);
+                    console.log("Message index:", messageIndex);
+                }
+                mudarIndexMessage = await false;
+            }
+        } else showMessageByIndex(messageIndex);
 
-    if (maxRadiusReached % errorTrigger === 0 && maxRadiusReached > 0 && mainRoom) {
-        triggerErroAnimation();
-        maxRadiusReached = 0;
-        mudarIndexMessage = true;
+        if (consecutiveMisses > 10) {
+            sendUserBackToIntro();
+            return; // Exit early to prevent more drawing
+        }
     }
 
-    if (!invitationMode && consecutiveMisses > 10) {
-        sendUserBackToIntro();
-        return; // Exit early to prevent more drawing
-    }
     setTimeout(() => update(numCirc), 1000);
     return;
 }
@@ -245,7 +254,7 @@ canvas.addEventListener("click", (event) => {
 
 function resetErrors() {
     // Reset background color
-    document.body.style.backgroundColor = `rgb(${startColor.r}, ${startColor.g}, ${startColor.b})`;
+    //document.body.style.backgroundColor = `rgb(${startColor.r}, ${startColor.g}, ${startColor.b})`;
 
     // Hide error canvas
     const erroCanvas = document.getElementById("erro");
@@ -264,13 +273,6 @@ function resetErrors() {
 function gameLoop() {
     draw();
     animationFrameId = requestAnimationFrame(gameLoop);
-}
-
-function stopGameLoop() {
-    if (animationFrameId !== null) {
-        cancelAnimationFrame(animationFrameId);
-        animationFrameId = null;
-    }
 }
 
 
@@ -309,11 +311,12 @@ export function sendUserBackToIntro() {
     document.getElementById("doorIcon").classList.add("hidden");
 
     greenSquares = [];
-
+    countdownFinished = false;
     maxRadiusReached = 0;
     consecutiveHits = 0;
     consecutiveMisses = 0;
-
+    mainRoom = false;
+    invitationMode = false;
     document.body.style.backgroundColor = `rgb(${startColor.r}, ${startColor.g}, ${startColor.b})`;
 
     // Reset animations and music
