@@ -127,7 +127,7 @@ export function getMessagesById(id) {
 export function showMessageByIndex(index) {
   if (index < 0 || index >= messages.length) return;
   if (index === null) return; // Check if index is null
-
+document.getElementById("grid").classList.remove("hidden");
 
   //Esconde todas os elementos
   messageElements.forEach(element => {
@@ -143,8 +143,11 @@ export function showMessageByIndex(index) {
     if (element) {
       element.textContent = part.text;
       element.style.display = 'block';
+
     }
   });
+
+
 
   // Esconder a mensagem após 4 segundos
   setTimeout(() => {

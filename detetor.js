@@ -14,8 +14,6 @@ export function loadDetectorImage(imageSrc) {
     drumImg.onload = () => {
         ctx.clearRect(0, 0, canvas.width, canvas.height);
         ctx.drawImage(drumImg, 0, 0, canvas.width, canvas.height);
-
-        // ✅ Delay detection to allow image to fully render
         detectGreen();
         canvas.style.display = "none";
 
@@ -24,6 +22,7 @@ export function loadDetectorImage(imageSrc) {
 
 //Deteção dos quadrados verdes
 function detectGreen() {
+    greenSquares = []; // Limpa os quadrados verdes anteriores
     const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
     const data = imageData.data;
 

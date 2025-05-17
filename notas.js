@@ -6,6 +6,8 @@ import { messages } from './js/messages.js';
 import { drawBlurryScreen, resetBlurryScreen } from './newerro.js';
 import { drawPulsingBlur, resetPulsingBlur } from './newerro2.js';
 import { tryPlayMusic, setVolumeFromRadius, cancelFadeOut, fadeOutMusicAfterDelay, resetMusic } from './music.js';
+import { drawIntro } from './intro.js';
+
 
 const sentenceTrigger = 3;
 const errorTrigger = 6;
@@ -25,7 +27,7 @@ canvas.classList.add("hidden");
 const ctx = canvas.getContext("2d");
 let switchBubble = false;
 let mainRoom = false;
-
+let animationFrameId = null;
 
 export let countdownFinished = false;
 export function markCountdownFinished() {
@@ -63,7 +65,7 @@ export function map(value, inMin, inMax, outMin, outMax) {
 
 let greenSquares = [];
 const maxRadius = 75;
-const growthRate = 0.5;
+const growthRate = 0.2;
 
 async function initializeGreenSquares() {
     greenSquares = [];
@@ -80,7 +82,7 @@ let step;
 function update(index) {
     if (greenSquares.length > 0 && greenSquares[numCirc].radius < maxRadius) {
         step = 0;
-        greenSquares[numCirc].radius += invitationMode ? 0.3 : growthRate;
+        greenSquares[numCirc].radius += invitationMode ? 0.1 : growthRate;
     } else {
         switch (step) {
             case 0:
@@ -129,7 +131,7 @@ async function draw() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     ctx.drawImage(drumSet, 0, 0, canvas.width, canvas.height);
     ctx.fillStyle = "red";
-    if (!countdownFinished && !invitationMode) return;
+    //if (!countdownFinished && !invitationMode) return;
     switchBubble = false;
     if (mudar) {
         numCirc = await getRandomInt(0, greenSquares.length - 1);
@@ -153,9 +155,9 @@ async function draw() {
 
     if (!invitationMode && maxRadiusReached % sentenceTrigger === 0 && maxRadiusReached > 0) {
         if (mudarIndexMessage) {
-            const reprimendMessages = getMessagesById("Encouragement");
+            let reprimendMessages = getMessagesById("Encouragement");
             console.log("Im in");
-            if (reprimendMessages.length > 0) {
+            if (reprimendMessages.length > 0 && countdownFinished) {
                 const randomIndex = Math.floor(Math.random() * reprimendMessages.length);
                 messageIndex = messages.indexOf(reprimendMessages[randomIndex]);
                 showMessageByIndex(messageIndex);
@@ -164,11 +166,13 @@ async function draw() {
             mudarIndexMessage = await false;
         }
     } else showMessageByIndex(messageIndex);
+
     if (maxRadiusReached % errorTrigger === 0 && maxRadiusReached > 0 && mainRoom) {
         triggerErroAnimation();
         maxRadiusReached = 0;
         mudarIndexMessage = true;
     }
+
     if (!invitationMode && consecutiveMisses > 10) {
         sendUserBackToIntro();
         return; // Exit early to prevent more drawing
@@ -259,8 +263,16 @@ function resetErrors() {
 
 function gameLoop() {
     draw();
-    requestAnimationFrame(gameLoop);
+    animationFrameId = requestAnimationFrame(gameLoop);
 }
+
+function stopGameLoop() {
+    if (animationFrameId !== null) {
+        cancelAnimationFrame(animationFrameId);
+        animationFrameId = null;
+    }
+}
+
 
 async function getRandomInt(min, max) {
     let random = await Math.round(Math.random() * (max - min) + min);
@@ -290,24 +302,30 @@ function triggerErroAnimation() {
     }
 }
 
+
 export function sendUserBackToIntro() {
     document.getElementById("game").classList.add("hidden");
     document.getElementById("intro").classList.remove("hidden");
     document.getElementById("doorIcon").classList.add("hidden");
 
-
     greenSquares = [];
+
     maxRadiusReached = 0;
     consecutiveHits = 0;
     consecutiveMisses = 0;
 
     document.body.style.backgroundColor = `rgb(${startColor.r}, ${startColor.g}, ${startColor.b})`;
+
     // Reset animations and music
     resetErrors();
     resetMusic();
     resetBlurryScreen();
     resetPulsingBlur();
     resetVareta();
+    drawIntro();
+
+    document.getElementById("musicSelection").classList.add("hidden");
+    document.querySelectorAll("#musicSelection button").forEach(btn => btn.disabled = false);
 }
 
 export function setInvitationMode(enabled) {
