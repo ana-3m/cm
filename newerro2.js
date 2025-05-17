@@ -37,5 +37,6 @@ export function resetPulsingBlur() {
     opacity = 0.5;
     time = 0;
     animationRunning = false;
-    erro.clearRect(0, 0, canvas.width, canvas.height);
+    const erroCanvas = document.getElementById("erro");
+    erroCanvas.getContext("2d").clearRect(0, 0, erroCanvas.width, erroCanvas.height);
 }
