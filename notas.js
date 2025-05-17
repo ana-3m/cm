@@ -8,14 +8,14 @@ import { drawPulsingBlur, resetPulsingBlur } from './newerro2.js';
 import { tryPlayMusic, setVolumeFromRadius, cancelFadeOut, fadeOutMusicAfterDelay, resetMusic } from './music.js';
 import { drawIntro } from './intro.js';
 
+const invitationHitsMax = 2; //Trigger para ser convidado a tocar na sala principal
+const sentenceTrigger = 3; //Trigger para mostrar mensagens a reclamar
+const errorTrigger = 6; //Trigger para mostrar os erros
 
-const sentenceTrigger = 3;
-const errorTrigger = 6;
 let consecutiveHits = 0;
 let consecutiveMisses = 0;
 let invitationMode = false;
 let invitationHits = 0;
-const invitationHitsMax = 2;
 let numCirc;
 let mudar = false;
 const drumSet = new Image();
@@ -65,7 +65,7 @@ export function map(value, inMin, inMax, outMin, outMax) {
 
 let greenSquares = [];
 const maxRadius = 75;
-const growthRate = 0.2;
+const growthRate = 0.6;
 
 async function initializeGreenSquares() {
     greenSquares = [];
@@ -82,7 +82,7 @@ let step;
 function update(index) {
     if (greenSquares.length > 0 && greenSquares[numCirc].radius < maxRadius) {
         step = 0;
-        greenSquares[numCirc].radius += invitationMode ? 0.1 : growthRate;
+        greenSquares[numCirc].radius += invitationMode ? 0.25 : growthRate;
     } else {
         switch (step) {
             case 0:
@@ -125,18 +125,11 @@ function updateBackgroundColor() {
 
 
 async function draw() {
-
     ctx.filter = "drop-shadow(0px -3px 0px rgba(29, 29, 29, 0.3))";
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     ctx.drawImage(drumSet, 0, 0, canvas.width, canvas.height);
     ctx.save();
-ctx.fillStyle = "lime";
-greenSquares.forEach(sq => {
-    ctx.beginPath();
-    ctx.arc(sq.x, sq.y, 7, 0, Math.PI * 2);
-    ctx.fill();
-});
-ctx.restore();
+
     ctx.fillStyle = "red";
     //if (!countdownFinished && !invitationMode) return;
     switchBubble = false;
@@ -206,7 +199,6 @@ canvas.addEventListener("click", (event) => {
     if (hit && greenSquares[numCirc].radius < maxRadius) {
 
         //tryPlayMusic();
-
         if (invitationMode) {
             invitationHits++;
             if (invitationHits >= invitationHitsMax) {
