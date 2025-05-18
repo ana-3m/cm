@@ -321,6 +321,8 @@ export function sendUserBackToIntro() {
 
     document.getElementById("musicSelection").classList.add("hidden");
     document.querySelectorAll("#musicSelection button").forEach(btn => btn.disabled = false);
+
+    tryPlayMusic("./sound/FletcherClass.wav");
 }
 
 export function setInvitationMode(enabled) {

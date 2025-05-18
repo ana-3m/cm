@@ -314,7 +314,7 @@
         import { loadDetectorImage } from './detetor.js';
         import { showMessageByIndex } from './js/messages.js';
 
-        import { tryPlayMusic } from './music.js';
+        import { tryPlayMusic, resetMusic } from './music.js';
 
         import { showFletcherPhrase, hideFletcherPhrase } from './fletcher.js';
 
@@ -346,6 +346,7 @@
             document.getElementById("intro").classList.add("hidden");
             document.getElementById("musicSelection").classList.remove("hidden");
             document.getElementById("doorIcon").classList.remove("hidden");
+            resetMusic();
         };
 
         window.frontDoor = () => {
@@ -379,6 +380,7 @@
             resetVareta();
             resetBlurryScreen();
             resetPulsingBlur();
+            resetMusic();
 
             document.getElementById("messageCanvas").classList.add("hidden");
             document.getElementById("grid").classList.add("hidden");

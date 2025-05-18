@@ -94,8 +94,10 @@ export function cancelFadeOut() {
 }
 
 export function resetMusic() {
-    cancelFadeOut();
-    currentAudio.pause();
-    currentAudio.currentTime = 0;
-    musicStarted = false;
+    if (currentAudio) {
+        cancelFadeOut();
+        currentAudio.pause();
+        currentAudio.currentTime = 0;
+        musicStarted = false;
+    }
 }

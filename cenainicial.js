@@ -1,3 +1,5 @@
+import { sendUserBackToIntro } from "./notas.js";
+
 let introHasStarted = false;
 
 export function start() {
@@ -54,6 +56,7 @@ export function start() {
                 //canvasInicial.style.opacity = "0";
                 canvasInicial.classList.add("hidden");
                 intro.classList.remove("hidden");
+                sendUserBackToIntro();
             }, 17000);
         }, 3000);
     }
