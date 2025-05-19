@@ -263,7 +263,9 @@
         .blink-door {
             animation: blinkDoor 1s infinite;
         }
+
         #vertical {
+            background-color: #613213;
             position: fixed;
             top: 0;
             left: 0;
@@ -333,7 +335,7 @@
         </div>
     </div>
     <div id="startScreen">
-        <div> 
+        <div>
             <p>To maximize the experience, </br> increase the device's volume.</p>
             <button id="startButton">Start</button>
         </div>
@@ -445,11 +447,11 @@
             // Se a largura for menor que a altura (provavelmente em modo retrato)
             if (window.innerWidth < window.innerHeight) {
                 vertical.classList.remove("hidden");
-                notVertical.classList.add("hidden");
+                //notVertical.classList.add("hidden");
 
             } else {
                 vertical.classList.add("hidden");
-                notVertical.classList.remove("hidden");
+                //notVertical.classList.remove("hidden");
             }
         }
         document.addEventListener("DOMContentLoaded", checkOrientation);
@@ -472,8 +474,8 @@
         let selectedMusic = null;
         let fletcherPhrase = fletcherPhraseIndex();
 
+        //***********************menu start
         const startB = document.getElementById("startButton");
-        //startB.addEventListener("click", start);
         startB.addEventListener("click", () => {
             console.log("starting...");
             document.getElementById("cenaInicial").classList.remove("hidden");
@@ -488,7 +490,7 @@
                 previewAudio.pause();
                 previewAudio.currentTime = 0;
             }
-           previewAudio = new Audio(path);
+            previewAudio = new Audio(path);
             previewAudio.volume = 0.5;
             previewAudio.play().catch(err => {
                 console.warn("Autoplay blocked:", err);
