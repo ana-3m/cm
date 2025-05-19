@@ -18,6 +18,7 @@ export function start() {
     metronome.volume = 0;
 
     if (getComputedStyle(canvasInicial).display !== "none") {
+        document.getElementById("startScreen").classList.add("hidden");
         metronome.play();
 
 

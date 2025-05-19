@@ -162,7 +162,7 @@
             bottom: 0;
             left: 0;
             width: 100%;
-            height: 200px;
+            height: 150px;
         }
 
         #conteiner {
@@ -187,7 +187,7 @@
             position: absolute;
             bottom: 0;
             right: 0;
-            height: 500px;
+            height: 300px;
             /* Define a altura máxima da imagem */
             width: auto;
         }
@@ -213,12 +213,16 @@
         @media only screen and (max-width: 1000px) {
 
             #bottomBar {
-                height: 100px;
+                height: 75px;
             }
 
             #bottomBar img {
-                height: 300px;
+                height: 175px;
                 width: auto;
+            }
+
+            #startButton {
+                padding: 5px 10px;
             }
         }
 
@@ -258,13 +262,79 @@
 
         .blink-door {
             animation: blinkDoor 1s infinite;
+
+        #vertical {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            display: none;
+            /* inicial, oculto */
+            align-items: center;
+            justify-content: center;
+            z-index: 10000;
+            /* acima de todos os outros elementos */
+        }
+
+        #vertical img {
+            max-width: 80%;
+            height: auto;
+            margin-bottom: 20px;
+        }
+
+        #startScreen {
+            /*background-color: #000000;*/
+            position: fixed;
+            width: 100%;
+            height: 100vh;
+            z-index: 20;
+        }
+
+        #startScreen div {
+            height: 100vh;
+            font-size: 5vw;
+            font-weight: bold;
+            color: white;
+            text-align: center;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 20px;
+        }
+
+        #startButton {
+            background: #bc7d30;
+            color: white;
+            font-weight: bold;
+            font-size: 2vw;
+            padding: 20px 30px;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+        }
+
+        #startButton:hover {
+            background: #d28f4b;
+
         }
     </style>
 </head>
 
 <body>
     <!--  <h1>Whiplash Drum Game</h1> -->
-    <div id="cenaInicial">
+    <div id="vertical">
+        <img src="img/rotate.png" alt="vire o telemóvel">
+    </div>
+    <div id="startScreen">
+        <div>
+            <p>To maximize the experience, </br> increase the device's volume.</p>
+            <button id="startButton">Start</button>
+        </div>
+    </div>
+    <div id="cenaInicial" class="hidden">
         <div>
             <p id="introText1" class="hidden">You're gonna be the greatest.</p>
             <p id="introText2" class="hidden">But there's a price for that.</p>
@@ -363,6 +433,24 @@
                 canvas.height = height;
             });
         }
+
+        /***********************************orientação do dispositivo****************************************/
+        function checkOrientation() {
+            const vertical = document.getElementById("vertical");
+            const notVertical = document.getElementById("cenaInicial");
+            // Se a largura for menor que a altura (provavelmente em modo retrato)
+            if (window.innerWidth < window.innerHeight) {
+                vertical.style.display = "flex";
+                notVertical.style.display = "none";
+
+            } else {
+                vertical.style.display = "none";
+                notVertical.style.display = "block";
+            }
+        }
+        document.addEventListener("DOMContentLoaded", checkOrientation);
+        window.addEventListener("resize", checkOrientation);
+
         import { resetVareta } from './erros.js';
         import { resetBlurryScreen } from './newerro.js';
         import { resetPulsingBlur } from './newerro2.js';
@@ -380,8 +468,6 @@
         let selectedMusic = null;
         let fletcherPhrase = fletcherPhraseIndex();
 
-        document.addEventListener("click", start);
-        document.addEventListener("touchstart", start);
 
         let previewAudio = null;
 
@@ -390,6 +476,9 @@
                 previewAudio.pause();
                 previewAudio.currentTime = 0;
             }
+        const startB = document.getElementById("startButton");
+        startB.addEventListener("click", start);
+
 
             previewAudio = new Audio(path);
             previewAudio.volume = 0.5;
@@ -442,6 +531,7 @@
                 //alert("You must complete the left room first!");
                 console.log("Fletcher index: ", fletcherPhrase);
                 // Optional: visual feedback
+
                 switch (fletcherPhrase) {
                     case 0:
                         showFletcherPhrase('lockedDoor');
@@ -451,6 +541,8 @@
                         showFletcherPhrase('training');
                         break;
                 }
+
+
                 resetMusic();
                 return;
             }
