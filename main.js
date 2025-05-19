@@ -212,6 +212,7 @@ canvas.addEventListener("click", (event) => {
                     frontDoor.classList.remove("locked");
                     frontDoor.style.cursor = "pointer";
                 }
+                showFletcherPhrase("encoraje");
                 const invitationMessages = getMessagesById("Invitation");
                 const doorIcon = document.getElementById("doorIcon");
                 if (doorIcon && !doorIcon.classList.contains("blink-door")) {
@@ -308,6 +309,10 @@ export function sendUserBackToIntro() {
     document.getElementById("game").classList.add("hidden");
     document.getElementById("intro").classList.remove("hidden");
     document.getElementById("doorIcon").classList.add("hidden");
+
+    if (document.getElementById("doorIcon").classList.contains("blink-door")) {
+            document.getElementById("doorIcon").classList.remove("blink-door");
+    }
 
     greenSquares = [];
     countdownFinished = false;

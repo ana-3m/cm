@@ -14,7 +14,7 @@ const fraseFletcher = {
         p: "Go train some more, and then come back when I say.",
         x: "tap here to continue"
     },
-    encoraje2: {
+    encoraje: {
         p: "Meet me in my class!",
         x: "tap here to continue"
     }
