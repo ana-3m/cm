@@ -115,9 +115,9 @@
             top: 0;
             left: 0;
             z-index: 10;
-            background-color: rgba(0, 0, 0, 0.85);
+            background-color: #613213;
             width: 100%;
-            height: 100%;
+            height: 100vh;
 
             flex-direction: column;
             justify-content: center;
@@ -126,27 +126,38 @@
             font-family: Arial, sans-serif;
         }
 
+        #musicSelection h2 {
+            font-size: 8vh;
+            font-weight: bold;
+        }
+
         .music-option {
             display: flex;
             align-items: center;
-            gap: 15px;
+            /*gap: 15px;*/
             background-color: #be9058;
             border-radius: 10px;
-            padding: 10px 20px;
-            margin: 10px;
-            min-width: 280px;
+            padding: 4% 6%;
+            margin: 3%;
+            min-width: 140%;
             justify-content: space-between;
-            font-size: 18px;
+            font-size: 4.5vh;
             box-shadow: 2px 2px 5px #00000066;
+        }
+
+        .musicButtons {
+            display: flex;
+            justify-content: flex-end;
         }
 
         .music-option button {
             background-color: #836137;
             border: none;
             color: white;
-            padding: 6px 12px;
+            padding: 6% 12%;
+            margin:3%;
             border-radius: 6px;
-            font-size: 16px;
+            font-size: 4vh;
             cursor: pointer;
             transition: background-color 0.2s ease;
         }
@@ -353,29 +364,32 @@
         <div id="frontDoor" class="porta locked" onclick="frontDoor()"> </div>
     </div>
     <div id="musicSelection" class="hidden">
-        <h2 style="color: white;">Escolha uma música para treinar:</h2>
-
-        <div class="music-option">
-            <span>Hip Jazz</span>
-            <div>
-                <button id="preview1">▶️</button>
-                <button id="sound1">Selecionar</button>
-            </div>
+        <div>
+            <h2>Choose a music to play</h2>
         </div>
-
-        <div class="music-option">
-            <span>The Jazz</span>
-            <div>
-                <button id="preview2">▶️</button>
-                <button id="sound2">Selecionar</button>
+        <div style=" display: flex; flex-direction: column; align-items: center;">
+            <div class="music-option">
+                <span>Hip Jazz</span>
+                <div class="musicButtons">
+                    <button id="preview1">▶️</button>
+                    <button id="sound1">Select</button>
+                </div>
             </div>
-        </div>
 
-        <div class="music-option">
-            <span>The Lounge</span>
-            <div>
-                <button id="preview3">▶️</button>
-                <button id="sound3">Selecionar</button>
+            <div class="music-option">
+                <span>The Jazz</span>
+                <div class="musicButtons">
+                    <button id="preview2">▶️</button>
+                    <button id="sound2">Select</button>
+                </div>
+            </div>
+
+            <div class="music-option">
+                <span>The Lounge</span>
+                <div class="musicButtons">
+                    <button id="preview3">▶️</button>
+                    <button id="sound3">Select</button>
+                </div>
             </div>
         </div>
     </div>
@@ -477,6 +491,9 @@
         //***********************menu start
         const startB = document.getElementById("startButton");
         startB.addEventListener("click", () => {
+            if (!isFullscreen) {
+                toggleFullscreen();
+            }
             console.log("starting...");
             document.getElementById("cenaInicial").classList.remove("hidden");
             document.getElementById("startScreen").classList.add("hidden");
