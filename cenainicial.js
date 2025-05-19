@@ -1,4 +1,4 @@
-import { sendUserBackToIntro } from "./notas.js";
+import { sendUserBackToIntro } from "./main.js";
 
 let introHasStarted = false;
 

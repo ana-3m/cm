@@ -1,7 +1,7 @@
 //const jazzAudio = new Audio("./sound/hipjazz.mp3");
 //jazzAudio.loop = true;
 //jazzAudio.volume = 0.2;
-import { map } from "./notas.js";
+import { map } from "./main.js";
 //let musicStarted = false;
 let fadeTimeout = null;
 let fadeInterval = null;

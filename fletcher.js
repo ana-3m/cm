@@ -1,9 +1,13 @@
-import { sendUserBackToIntro } from "./notas.js";
+import { sendUserBackToIntro } from "./main.js";
 
 // Defina os "Fletcher phrases" – você pode colocar isso num módulo, por exemplo, fletcher.js
 const fraseFletcher = {
     lockedDoor: {
-        p: "Who dares to interrupt my class??",
+        p: "Who dares to interrupt my class?",
+        x: "tap here to continue"
+    },
+    expelled: {
+        p: "You're not ready yet!",
         x: "tap here to continue"
     },
     training: {

@@ -345,12 +345,14 @@
             <img src="img/rotate.png" alt="vire o telemóvel">
         </div>
     </div>
+
     <div id="startScreen">
         <div>
             <p>To maximize the experience, </br> increase the device's volume.</p>
             <button id="startButton">Start</button>
         </div>
     </div>
+
     <div id="cenaInicial" class="hidden">
         <div>
             <p id="introText1" class="hidden">You're gonna be the greatest.</p>
@@ -358,11 +360,13 @@
             <p id="welcome" class="hidden">Welcome to the Whiplash experience.</p>
         </div>
     </div>
+
     <div id="intro" class="hidden">
         <canvas id="introCanvas"></canvas>
         <div id="leftDoor" class="porta" onclick="leftDoor()"> </div>
         <div id="frontDoor" class="porta locked" onclick="frontDoor()"> </div>
     </div>
+
     <div id="musicSelection" class="hidden">
         <div>
             <h2>Choose a music to play</h2>
@@ -419,7 +423,7 @@
 
     <!-- JAVASCRIPT -->
     <script type="module" src="intro.js"></script>
-    <script type="module" src="notas.js"></script>
+    <script type="module" src="main.js"></script>
     <script type="module">
 
         let countdownFinished = false;
@@ -430,7 +434,7 @@
                 .then(() => {
                     resizeAllCanvases();
 
-                    import('./notas.js').then(module => {
+                    import('./main.js').then(module => {
                         module.initializeGreenSquares();
                     });
                     console.log("Fullscreen mode activated.");
@@ -474,7 +478,7 @@
         import { resetVareta } from './erros.js';
         import { resetBlurryScreen } from './newerro.js';
         import { resetPulsingBlur } from './newerro2.js';
-        import { setDrumImage, setInvitationMode, sendUserBackToIntro, markCountdownFinished, fletcherPhraseIndex } from './notas.js';
+        import { setDrumImage, setInvitationMode, sendUserBackToIntro, markCountdownFinished, fletcherPhraseIndex } from './main.js';
         import { loadDetectorImage } from './detetor.js';
         import { showMessageByIndex } from './js/messages.js';
 

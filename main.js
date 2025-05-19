@@ -6,7 +6,7 @@ import { drawBlurryScreen, resetBlurryScreen } from './newerro.js';
 import { drawPulsingBlur, resetPulsingBlur } from './newerro2.js';
 import { tryPlayMusic, setVolumeFromRadius, cancelFadeOut, fadeOutMusicAfterDelay, resetMusic } from './music.js';
 import { drawIntro } from './intro.js';
-
+import { showFletcherPhrase } from "./fletcher.js";
 
 
 const invitationHitsMax = 10; //Trigger para ser convidado a tocar na sala principal
@@ -178,6 +178,7 @@ async function draw() {
 
         if (consecutiveMisses > 8) {
             document.getElementById("frontDoor").classList.add("locked");
+            showFletcherPhrase("expelled");
             fletcherIndex = 1;
             sendUserBackToIntro();
             return; // Exit early to prevent more drawing
