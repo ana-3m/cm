@@ -644,7 +644,10 @@
         document.getElementById("doorIcon").addEventListener("click", () => {
             sendUserBackToIntro();
             document.getElementById("doorIcon").classList.remove("blink-door");
-
+            const bottomBar = document.getElementById("bottomBar");
+            if (!bottomBar.classList.contains("hidden")) {
+                bottomBar.classList.add("hidden");
+            }
         });
 
         function startCountdown() {

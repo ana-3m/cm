@@ -313,10 +313,6 @@ export function sendUserBackToIntro() {
     if (document.getElementById("doorIcon").classList.contains("blink-door")) {
         document.getElementById("doorIcon").classList.remove("blink-door");
     }
-    const bottomBar = document.getElementById("bottomBar");
-    if (!bottomBar.classList.contains("hidden")) {
-        bottomBar.classList.add("hidden");
-    }
 
     greenSquares = [];
     countdownFinished = false;
