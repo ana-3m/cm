@@ -68,6 +68,7 @@ export function resetVareta() {
         rotationSpeed: 3
     };
     animationStopped = false;
+
     const erroCanvas = document.getElementById("erro");
     erroCanvas.getContext("2d").clearRect(0, 0, erroCanvas.width, erroCanvas.height);
 }

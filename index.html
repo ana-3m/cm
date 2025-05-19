@@ -110,30 +110,51 @@
             top: 75vh;
         }
 
-
-
         #musicSelection {
             position: absolute;
             top: 0;
             left: 0;
             z-index: 10;
-            /* Higher than any canvas */
-            background-color: rgba(0, 0, 0, 0.8);
+            background-color: rgba(0, 0, 0, 0.85);
             width: 100%;
             height: 100%;
 
-            flex-direction: row;
+            flex-direction: column;
             justify-content: center;
             align-items: center;
+            color: white;
+            font-family: Arial, sans-serif;
         }
 
-
-        #musicSelection button {
-            font-size: 24px;
+        .music-option {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            background-color: #be9058;
+            border-radius: 10px;
             padding: 10px 20px;
             margin: 10px;
-            cursor: pointer;
+            min-width: 280px;
+            justify-content: space-between;
+            font-size: 18px;
+            box-shadow: 2px 2px 5px #00000066;
         }
+
+        .music-option button {
+            background-color: #836137;
+            border: none;
+            color: white;
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background-color 0.2s ease;
+        }
+
+        .music-option button:hover {
+            background-color: #6a4d2d;
+        }
+
 
         #bottomBar {
             position: fixed;
@@ -220,6 +241,24 @@
             text-align: center;
             /*transition: opacity 1s ease-in-out;*/
         }
+
+        @keyframes blinkDoor {
+            0% {
+                color: #BC7D30;
+            }
+
+            50% {
+                color: red;
+            }
+
+            100% {
+                color: #BC7D30;
+            }
+        }
+
+        .blink-door {
+            animation: blinkDoor 1s infinite;
+        }
     </style>
 </head>
 
@@ -238,11 +277,33 @@
         <div id="frontDoor" class="porta locked" onclick="frontDoor()"> </div>
     </div>
     <div id="musicSelection" class="hidden">
-        <h2>Escolha uma música para treinar:</h2>
-        <button id="sound1">Música 1</button>
-        <button id="sound2">Música 2</button>
-        <button id="sound3">Música 3</button>
+        <h2 style="color: white;">Escolha uma música para treinar:</h2>
+
+        <div class="music-option">
+            <span>Hip Jazz</span>
+            <div>
+                <button id="preview1">▶️</button>
+                <button id="sound1">Selecionar</button>
+            </div>
+        </div>
+
+        <div class="music-option">
+            <span>The Jazz</span>
+            <div>
+                <button id="preview2">▶️</button>
+                <button id="sound2">Selecionar</button>
+            </div>
+        </div>
+
+        <div class="music-option">
+            <span>The Lounge</span>
+            <div>
+                <button id="preview3">▶️</button>
+                <button id="sound3">Selecionar</button>
+            </div>
+        </div>
     </div>
+
     <div id="game" class="hidden">
         <video id="introVideo" class="hidden" width="100vw" height="100vh" controls>
             <source src="tesste.mp4" type="video/mp4">
@@ -302,15 +363,10 @@
                 canvas.height = height;
             });
         }
-
-
-
-
-
         import { resetVareta } from './erros.js';
         import { resetBlurryScreen } from './newerro.js';
         import { resetPulsingBlur } from './newerro2.js';
-        import { setDrumImage, setInvitationMode, sendUserBackToIntro, markCountdownFinished } from './notas.js';
+        import { setDrumImage, setInvitationMode, sendUserBackToIntro, markCountdownFinished, fletcherPhraseIndex } from './notas.js';
         import { loadDetectorImage } from './detetor.js';
         import { showMessageByIndex } from './js/messages.js';
 
@@ -322,10 +378,35 @@
 
         export let frontDoorUnlocked = false;
         let selectedMusic = null;
+        let fletcherPhrase = fletcherPhraseIndex();
 
         document.addEventListener("click", start);
+        document.addEventListener("touchstart", start);
 
+        let previewAudio = null;
 
+        function previewMusic(path) {
+            if (previewAudio) {
+                previewAudio.pause();
+                previewAudio.currentTime = 0;
+            }
+
+            previewAudio = new Audio(path);
+            previewAudio.volume = 0.5;
+            previewAudio.play().catch(err => {
+                console.warn("Autoplay blocked:", err);
+            });
+        }
+
+        document.getElementById("preview1").addEventListener("click", () => {
+            previewMusic('./sound/hipjazz.mp3');
+        });
+        document.getElementById("preview2").addEventListener("click", () => {
+            previewMusic('./sound/thejazzpiano.mp3');
+        });
+        document.getElementById("preview3").addEventListener("click", () => {
+            previewMusic('./sound/thelounge.mp3');
+        });
         document.getElementById("sound1").addEventListener("click", () => {
             handleMusicSelection('./sound/hipjazz.mp3');
         });
@@ -335,6 +416,7 @@
         document.getElementById("sound3").addEventListener("click", () => {
             handleMusicSelection('./sound/thelounge.mp3');
         });
+
         let isFullscreen = false;
 
 
@@ -342,9 +424,13 @@
             if (!isFullscreen) {
                 toggleFullscreen();
             }
+            if (!bottomBar.classList.contains("hidden")) {
+                bottomBar.classList.add("hidden");
+            }
             setInvitationMode(true);
             document.getElementById("intro").classList.add("hidden");
             document.getElementById("musicSelection").classList.remove("hidden");
+            document.getElementById("musicSelection").style.display = "flex";
             document.getElementById("doorIcon").classList.remove("hidden");
             resetMusic();
         };
@@ -352,12 +438,20 @@
         window.frontDoor = () => {
             if (document.getElementById("frontDoor").classList.contains("locked")) {
                 console.log("Front door is locked.");
-
+                let fletcherPhrase = fletcherPhraseIndex();
                 //alert("You must complete the left room first!");
-
+                console.log("Fletcher index: ", fletcherPhrase);
                 // Optional: visual feedback
-                showFletcherPhrase('lockedDoor');
-                resetMusic();                
+                switch (fletcherPhrase) {
+                    case 0:
+                        showFletcherPhrase('lockedDoor');
+                        break;
+
+                    case 1:
+                        showFletcherPhrase('training');
+                        break;
+                }
+                resetMusic();
                 return;
             }
             setInvitationMode(false);
@@ -415,6 +509,8 @@
 
         document.getElementById("doorIcon").addEventListener("click", () => {
             sendUserBackToIntro();
+            document.getElementById("doorIcon").classList.remove("blink-door");
+
         });
 
         function startCountdown() {
@@ -454,25 +550,16 @@
         }
 
 
-
-        /*function selectMusic(musicName) {
-            selectedMusic = musicName;
-            document.getElementById("musicSelection").classList.add("hidden");
-            document.getElementById("game").classList.remove("hidden");
-
-            // Optional: disable buttons to avoid re-selection
-            document.querySelectorAll("#musicSelection button").forEach(btn => btn.disabled = true);
-
-            console.log("Música escolhida:", selectedMusic);
-
-            import('./music.js').then(module => {
-                module.tryPlayMusic(selectedMusic);
-            });
-        }*/
-
         function handleMusicSelection(musicPath) {
             selectedMusic = musicPath;
 
+            // Stop preview if playing
+            if (previewAudio) {
+                previewAudio.pause();
+                previewAudio.currentTime = 0;
+                previewAudio = null;
+            }
+            document.getElementById("musicSelection").style.display = "none";
             document.getElementById("musicSelection").classList.add("hidden");
             document.getElementById("game").classList.remove("hidden");
 
@@ -484,6 +571,7 @@
                 module.tryPlayMusic(selectedMusic);
             });
         }
+
 
     </script>
 
