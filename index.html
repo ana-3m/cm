@@ -353,12 +353,11 @@
             if (document.getElementById("frontDoor").classList.contains("locked")) {
                 console.log("Front door is locked.");
 
-
-                alert("You must complete the left room first!");
+                //alert("You must complete the left room first!");
 
                 // Optional: visual feedback
                 showFletcherPhrase('lockedDoor');
-
+                resetMusic();                
                 return;
             }
             setInvitationMode(false);
@@ -411,7 +410,6 @@
                     tryPlayMusic(randomMusic);
                 }, 3500);
             });
-            //assim já n aparece no countdown mas acho q n aparece de todo hahaha
 
         };
 

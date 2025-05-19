@@ -1,3 +1,5 @@
+import { sendUserBackToIntro } from "./notas.js";
+
 // Defina os "Fletcher phrases" – você pode colocar isso num módulo, por exemplo, fletcher.js
 const fraseFletcher = {
     lockedDoor: {
@@ -44,4 +46,5 @@ export function hideFletcherPhrase() {
 // Exemplo: Esconder mensagem ao clicar na própria barra
 bar.addEventListener('click', () => {
     hideFletcherPhrase();
+    sendUserBackToIntro();
 });
