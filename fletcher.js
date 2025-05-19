@@ -6,8 +6,8 @@ const fraseFletcher = {
         p: "Who dares to interrupt my class??",
         x: "tap here to continue"
     },
-    encoraje: {
-        p: "I see you can play, give it a little more for me to hear.",
+    training: {
+        p: "Go train some more, and come back when I say.",
         x: "tap here to continue"
     },
     encoraje2: {

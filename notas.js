@@ -1,14 +1,15 @@
 
 import { getGreenSquares } from './detetor.js';
+import { getMessagesById, showMessageByIndex, messages } from './js/messages.js';
 import { animateVareta, resetVareta } from './erros.js';
-import { getMessagesById, showMessageByIndex } from './js/messages.js';
-import { messages } from './js/messages.js';
 import { drawBlurryScreen, resetBlurryScreen } from './newerro.js';
 import { drawPulsingBlur, resetPulsingBlur } from './newerro2.js';
 import { tryPlayMusic, setVolumeFromRadius, cancelFadeOut, fadeOutMusicAfterDelay, resetMusic } from './music.js';
 import { drawIntro } from './intro.js';
 
-const invitationHitsMax = 2; //Trigger para ser convidado a tocar na sala principal
+
+
+const invitationHitsMax = 10; //Trigger para ser convidado a tocar na sala principal
 const sentenceTrigger = 3; //Trigger para mostrar mensagens a reclamar
 const errorTrigger = 6; //Trigger para mostrar os erros
 
@@ -26,8 +27,11 @@ const canvas = document.getElementById("gameCanvas");
 canvas.classList.add("hidden");
 const ctx = canvas.getContext("2d");
 let switchBubble = false;
+let randomIndex = null;
 let mainRoom = false;
+let trocaErro = true;
 let animationFrameId = null;
+let fletcherIndex = 0;
 
 export let countdownFinished = false;
 export function markCountdownFinished() {
@@ -156,13 +160,12 @@ async function draw() {
     if (mainRoom) {
         if (maxRadiusReached % errorTrigger === 0 && maxRadiusReached > 0) {
             triggerErroAnimation();
-            mudarIndexMessage = true;
+            console.log("Error triggered");
         }
         updateBackgroundColor();
         if (maxRadiusReached % sentenceTrigger === 0 && maxRadiusReached > 0) {
             if (mudarIndexMessage) {
                 let reprimendMessages = getMessagesById("Encouragement");
-                console.log("Im in");
                 if (reprimendMessages.length > 0 && countdownFinished) {
                     const randomIndex = Math.floor(Math.random() * reprimendMessages.length);
                     messageIndex = messages.indexOf(reprimendMessages[randomIndex]);
@@ -171,9 +174,11 @@ async function draw() {
                 }
                 mudarIndexMessage = await false;
             }
-        } else showMessageByIndex(messageIndex);
+        }
 
-        if (consecutiveMisses > 10) {
+        if (consecutiveMisses > 8) {
+            document.getElementById("frontDoor").classList.add("locked");
+            fletcherIndex = 1;
             sendUserBackToIntro();
             return; // Exit early to prevent more drawing
         }
@@ -197,8 +202,6 @@ canvas.addEventListener("click", (event) => {
     const hit = calculateDistance(mouseX, mouseY, greenSquares[numCirc].x, greenSquares[numCirc].y) < greenSquares[numCirc].radius;
 
     if (hit && greenSquares[numCirc].radius < maxRadius) {
-
-        //tryPlayMusic();
         if (invitationMode) {
             invitationHits++;
             if (invitationHits >= invitationHitsMax) {
@@ -209,7 +212,10 @@ canvas.addEventListener("click", (event) => {
                     frontDoor.style.cursor = "pointer";
                 }
                 const invitationMessages = getMessagesById("Invitation");
-
+                const doorIcon = document.getElementById("doorIcon");
+                if (doorIcon && !doorIcon.classList.contains("blink-door")) {
+                    doorIcon.classList.add("blink-door");
+                }
                 if (invitationMessages.length > 0) {
                     const randomIndex = Math.floor(Math.random() * invitationMessages.length);
                     const index = messages.indexOf(invitationMessages[randomIndex]);
@@ -221,27 +227,21 @@ canvas.addEventListener("click", (event) => {
 
         if (consecutiveHits >= 6) {
             resetErrors();
+            trocaErro = true;
             consecutiveHits = 0;
         }
         mudar = true;
         consecutiveHits++;
         consecutiveMisses = 0;
 
-
         if (maxRadiusReached >= 1 && !switchBubble) {
             maxRadiusReached--;
-        }
-
-        if (consecutiveHits >= 6) {
-            resetErrors();
-            consecutiveHits = 0;
         }
 
     } else if (hit && greenSquares[numCirc].radius >= maxRadius) {
         mudar = true;
     }
 });
-
 
 
 function resetErrors() {
@@ -257,10 +257,15 @@ function resetErrors() {
     resetBlurryScreen();
     resetPulsingBlur();
 
+    trocaErro = true;
+
     // Reset game error count
     maxRadiusReached = 0;
 }
 
+export function fletcherPhraseIndex() {
+    return fletcherIndex;
+}
 
 function gameLoop() {
     draw();
@@ -277,11 +282,13 @@ function calculateDistance(x1, y1, x2, y2) {
     return Math.sqrt(Math.pow(x2 - x1, 2) + Math.pow(y2 - y1, 2));
 }
 
-function triggerErroAnimation() {
+async function triggerErroAnimation() {
     const erroCanvas = document.getElementById("erro");
     erroCanvas.classList.remove("hidden");
-
-    const randomIndex = Math.floor(Math.random() * 3); // Get a random number between 0 and 2
+    if (trocaErro) {
+        randomIndex = Math.floor(Math.random() * 3); // Get a random number between 0 and 2
+        trocaErro = await false;
+    }
     console.log("Random index:", randomIndex);
     switch (randomIndex) {
         case 0:
@@ -296,7 +303,6 @@ function triggerErroAnimation() {
     }
 }
 
-
 export function sendUserBackToIntro() {
     document.getElementById("game").classList.add("hidden");
     document.getElementById("intro").classList.remove("hidden");
@@ -307,6 +313,7 @@ export function sendUserBackToIntro() {
     maxRadiusReached = 0;
     consecutiveHits = 0;
     consecutiveMisses = 0;
+    trocaErro = true;
     mainRoom = false;
     invitationMode = false;
     document.body.style.backgroundColor = `rgb(${startColor.r}, ${startColor.g}, ${startColor.b})`;
@@ -330,7 +337,6 @@ export function setInvitationMode(enabled) {
 }
 
 export { initializeGreenSquares, gameLoop };
-
 
 setTimeout(() => {
     initializeGreenSquares();
