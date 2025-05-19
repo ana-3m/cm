@@ -231,15 +231,17 @@
             left: 0;
             width: 100vw;
             height: 100vh;
-            display: none;
-            /* inicial, oculto */
-            align-items: center;
-            justify-content: center;
             z-index: 10000;
-            /* acima de todos os outros elementos */
         }
 
-        #vertical img {
+        #vertical div {
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        #vertical div img {
             max-width: 80%;
             height: auto;
             margin-bottom: 20px;
@@ -287,7 +289,9 @@
 <body>
     <!--  <h1>Whiplash Drum Game</h1> -->
     <div id="vertical">
-        <img src="img/rotate.png" alt="vire o telemóvel">
+        <div>
+            <img src="img/rotate.png" alt="vire o telemóvel">
+        </div>
     </div>
     <div id="startScreen">
         <div>
@@ -376,15 +380,15 @@
         /***********************************orientação do dispositivo****************************************/
         function checkOrientation() {
             const vertical = document.getElementById("vertical");
-            const notVertical = document.getElementById("cenaInicial");
+            const notVertical = document.getElementById("startScreen");
             // Se a largura for menor que a altura (provavelmente em modo retrato)
             if (window.innerWidth < window.innerHeight) {
-                vertical.style.display = "flex";
-                notVertical.style.display = "none";
+                vertical.classList.remove("hidden");
+                notVertical.classList.add("hidden");
 
             } else {
-                vertical.style.display = "none";
-                notVertical.style.display = "block";
+                vertical.classList.add("hidden");
+                notVertical.classList.remove("hidden");
             }
         }
 
@@ -408,7 +412,13 @@
         let selectedMusic = null;
 
         const startB = document.getElementById("startButton");
-        startB.addEventListener("click", start);
+        //startB.addEventListener("click", start);
+        startB.addEventListener("click", () => {
+            console.log("starting...");
+            document.getElementById("cenaInicial").classList.remove("hidden");
+            start();
+        });
+
 
 
         document.getElementById("sound1").addEventListener("click", () => {
