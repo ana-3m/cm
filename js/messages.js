@@ -66,8 +66,9 @@ export const messages = [
   }, {
     id: "Invitation",
     parts: [
-      { text: "come", col: 1, row: 3 },
-      { text: "with me", col: 5, row: 5 }
+      { text: "come", col: 2, row: 3 },
+      { text: "with", col: 6, row: 4 },
+      { text: "me", col: 9, row: 4 }
     ]
   }, {
     id: "Invitation",
@@ -78,8 +79,9 @@ export const messages = [
   }, {
     id: "Invitation",
     parts: [
-      { text: "join", col: 1, row: 3 },
-      { text: "the fun", col: 5, row: 5 }
+      { text: "join", col: 2, row: 3 },
+      { text: "the", col: 6, row: 4 },
+      { text: "fun", col: 9, row: 4 }
     ]
   }
 ];
