@@ -240,6 +240,42 @@
             height: auto;
             margin-bottom: 20px;
         }
+
+        #startScreen {
+            /*background-color: #000000;*/
+            position: fixed;
+            width: 100%;
+            height: 100vh;
+            z-index: 20;
+        }
+
+        #startScreen div {
+            height: 100vh;
+            font-size: 5vw;
+            font-weight: bold;
+            color: white;
+            text-align: center;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 20px;
+        }
+
+        #startButton {
+            background: #bc7d30;
+            color: white;
+            font-size: 18px;
+            padding: 10px 20px;
+            border: none;
+            cursor: pointer;
+
+        }
+
+        #startButton:hover {
+            background: #d28f4b;
+        }
     </style>
 </head>
 
@@ -248,7 +284,13 @@
     <div id="vertical">
         <img src="img/rotate.png" alt="vire o telemóvel">
     </div>
-    <div id="cenaInicial">
+    <div id="startScreen">
+        <div>
+            <p>To maximize the experience, </br> increase the device's volume.</p>
+            <button id="startButton">Start</button>
+        </div>
+    </div>
+    <div id="cenaInicial" class="hidden">
         <div>
             <p id="introText1" class="hidden">You're gonna be the greatest.</p>
             <p id="introText2" class="hidden">But there's a price for that.</p>
@@ -360,7 +402,8 @@
         export let frontDoorUnlocked = false;
         let selectedMusic = null;
 
-        document.addEventListener("click", start);
+        const startB = document.getElementById("startButton");
+        startB.addEventListener("click", start);
 
 
         document.getElementById("sound1").addEventListener("click", () => {
