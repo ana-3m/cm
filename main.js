@@ -218,11 +218,7 @@ canvas.addEventListener("click", (event) => {
                 if (doorIcon && !doorIcon.classList.contains("blink-door")) {
                     doorIcon.classList.add("blink-door");
                 }
-                if (invitationMessages.length > 0) {
-                    const randomIndex = Math.floor(Math.random() * invitationMessages.length);
-                    const index = messages.indexOf(invitationMessages[randomIndex]);
-                    showMessageByIndex(index);
-                }
+                
                 invitationHits = 0; // reset after displaying
             }
         }
