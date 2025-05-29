@@ -89,13 +89,18 @@
             object-fit: cover;
         }
 
-        #doorIcon {
+        #doorIcon,
+        #backArrow {
             position: absolute;
             top: 10px;
             right: 10px;
             font-size: 48px;
             color: #BC7D30;
             z-index: 100;
+        }
+
+        #backArrow {
+            right: -8px;
         }
 
         #countdownNumber {
@@ -166,6 +171,25 @@
             background-color: #6a4d2d;
         }
 
+        #quit {
+            background-color: #613213;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: 200;
+        }
+
+
+        #quitB {
+            position: fixed;
+            /* Fixa a barra ao fundo da página */
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 45%;
+        }
 
         #bottomBar {
             position: fixed;
@@ -177,16 +201,17 @@
             z-index: 200;
         }
 
-        #conteiner {
+        #conteiner,
+        #conteinerQ {
             position: relative;
             height: 100%;
         }
 
-        #content {
+        #content,
+        #contentQ {
             height: 100%;
             width: 97%;
             background-color: #be9058;
-            /* Fundo preto com 80% de opacidade */
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -195,7 +220,12 @@
             padding: 0 15px;
         }
 
-        #conteiner img {
+        #contentQ {
+            width: 100%;
+        }
+
+        #conteiner img,
+        #conteinerQ img {
             position: absolute;
             bottom: 0;
             right: 0;
@@ -212,12 +242,23 @@
 
         #textF {
             position: absolute;
+            width: 96%;
             top: -10%;
             left: 2%;
+            text-align: justify;
             font-size: 5.5vh;
             font-weight: bold;
             color: #000000;
         }
+
+        #conteinerQ textF {
+            width: 94%;
+            top: -5%;
+            left: 3%;
+            text-align: justify;
+            font-size: 5vh;
+        }
+
 
         #continue {
             position: absolute;
@@ -421,10 +462,27 @@
 
         <span id="doorIcon" class="material-symbols-outlined hidden" style="cursor: pointer">door_open</span>
     </div>
+
     <div id="bottomBar" class="hidden">
         <div id="conteiner">
-            <img src="img/angryFletcher.png" alt="Angry Fletcher">
+            <img id="fletcher" src="img/angryFletcher.png" alt="Angry Fletcher">
             <div id="content">
+            </div>
+        </div>
+    </div>
+
+    <div id="quit" class="hidden">
+        <span id="backArrow" class="material-symbols-outlined" style="cursor: pointer">arrow_back_ios</span>
+        <div id="quitB">
+            <div id="conteinerQ">
+                <!--<img src="img/angryFletcher.png" alt="Angry Fletcher">-->
+                <div id="contentQ">
+                    <p id="textF">I'm here to push you past your limits, because greatness isn't given,
+                        it's earned through relentless challenge. Maybe I go too far, and
+                        discourage the next Charlie Parker from ever becoming Charlie Parker,
+                        however the next Charlie Parker would never let doubt hold him back.</p>
+                    <p id="continue">tap here to exit</p>
+                </div>
             </div>
         </div>
     </div>
@@ -499,6 +557,7 @@
         export let frontDoorUnlocked = false;
         let selectedMusic = null;
         let fletcherPhrase = fletcherPhraseIndex();
+        let room = "intro";
 
         //***********************menu start
         const startB = document.getElementById("startButton");
@@ -549,6 +608,7 @@
 
 
         window.leftDoor = () => {
+            room = "leftDoor";
             if (!isFullscreen) {
                 toggleFullscreen();
             }
@@ -564,6 +624,7 @@
         };
 
         window.frontDoor = () => {
+            room = "frontDoor";
             if (document.getElementById("frontDoor").classList.contains("locked")) {
                 console.log("Front door is locked.");
                 let fletcherPhrase = fletcherPhraseIndex();
@@ -586,7 +647,7 @@
                 return;
             }
             setInvitationMode(false);
-            console.log("frontDoor");
+            //console.log("frontDoor");
 
             document.getElementById("intro").classList.add("hidden");
             document.getElementById("game").classList.remove("hidden");
@@ -638,13 +699,38 @@
 
         };
 
+        document.getElementById("backArrow").addEventListener("click", () => {
+            document.getElementById("quit").classList.add("hidden");
+        });
+
         document.getElementById("doorIcon").addEventListener("click", () => {
             if (previewAudio) {
                 previewAudio.pause();
                 previewAudio.currentTime = 0;
                 previewAudio = null;
             }
+            console.log(room);
+            if (room === "frontDoor") {
+                console.log("Tentativa de sair da sala principal detectada.");
+
+                // Exibir frase de Fletcher antes de permitir sair
+                document.getElementById("quit").classList.remove("hidden");
+
+                /*document.getElementById("backArrow").addEventListener("click", () => {
+                document.getElementById("quit").classList.add("hidden");
+                });*/
+
+                // Aguarda o clique do jogador antes de permitir a saída
+                document.getElementById("quitB").addEventListener("click", () => {
+                    document.getElementById("quit").classList.add("hidden");
+                    sendUserBackToIntro();
+                    room = "intro";
+
+                }, { once: true }); // Garante que só executa uma vez
+                return;
+            }
             sendUserBackToIntro();
+            room = "intro";
             document.getElementById("doorIcon").classList.remove("blink-door");
             const bottomBar = document.getElementById("bottomBar");
             if (!bottomBar.classList.contains("hidden")) {
