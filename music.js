@@ -40,19 +40,6 @@ export function tryPlayMusic(musicFile) {
     }
 }
 
-/*export function tryPlayMusic() {
-    if (!musicStarted) {
-        jazzAudio.play()
-            .then(() => {
-                musicStarted = true;
-                console.log(" Music started");
-            })
-            .catch(err => {
-                console.warn(" Autoplay blocked:", err);
-            });
-    }
-}*/
-
 let normalized;
 export function setVolumeFromRadius(radius, maxRadius) {
     if (!currentAudio) {
