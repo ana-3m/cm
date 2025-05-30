@@ -572,18 +572,38 @@
         });
 
         let previewAudio = null;
+        let previewTimeout = null;
 
         function previewMusic(path) {
+            // Stop any existing preview
             if (previewAudio) {
                 previewAudio.pause();
                 previewAudio.currentTime = 0;
+                previewAudio = null;
             }
+
+            if (previewTimeout) {
+                clearTimeout(previewTimeout);
+            }
+
+            // Play a new short preview (separate from main player)
             previewAudio = new Audio(path);
             previewAudio.volume = 0.5;
+
             previewAudio.play().catch(err => {
                 console.warn("Autoplay blocked:", err);
             });
+
+            // Stop after 5 seconds
+            previewTimeout = setTimeout(() => {
+                if (previewAudio) {
+                    previewAudio.pause();
+                    previewAudio.currentTime = 0;
+                    previewAudio = null;
+                }
+            }, 5000); // 5 seconds
         }
+
 
         document.getElementById("preview1").addEventListener("click", () => {
             previewMusic('./sound/hipjazz.mp3');
@@ -596,6 +616,7 @@
         });
         document.getElementById("sound1").addEventListener("click", () => {
             handleMusicSelection('./sound/hipjazz.mp3');
+            console.log("Selected Hip Jazz");
         });
         document.getElementById("sound2").addEventListener("click", () => {
             handleMusicSelection('./sound/thejazzpiano.mp3');
@@ -778,28 +799,32 @@
         function handleMusicSelection(musicPath) {
             selectedMusic = musicPath;
 
-            // Stop preview if playing
+            // Stop preview if it's playing
             if (previewAudio) {
                 previewAudio.pause();
                 previewAudio.currentTime = 0;
                 previewAudio = null;
             }
+
+            if (previewTimeout) {
+                clearTimeout(previewTimeout);
+                previewTimeout = null;
+            }
+
+            // Hide music menu, show game
             document.getElementById("musicSelection").style.display = "none";
             document.getElementById("musicSelection").classList.add("hidden");
             document.getElementById("game").classList.remove("hidden");
 
+            // Set visuals
             setDrumImage("img/drumSetPlayfull.png");
             loadDetectorImage("img/playfulDetector.png");
 
-            // Start music playback
-            import('./music.js').then(module => {
-                module.tryPlayMusic(selectedMusic);
-            });
+            tryPlayMusic(musicPath);
         }
 
 
     </script>
-
 </body>
 
 </html>
