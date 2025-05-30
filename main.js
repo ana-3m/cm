@@ -9,7 +9,7 @@ import { drawIntro } from './intro.js';
 import { showFletcherPhrase } from "./fletcher.js";
 
 
-const invitationHitsMax = 2; //Trigger para ser convidado a tocar na sala principal
+const invitationHitsMax = 10; //Trigger para ser convidado a tocar na sala principal
 const sentenceTrigger = 3; //Trigger para mostrar mensagens a reclamar
 const errorTrigger = 6; //Trigger para mostrar os erros
 
@@ -139,7 +139,6 @@ async function draw() {
     switchBubble = false;
     if (mudar) {
         numCirc = await getRandomInt(0, greenSquares.length - 1);
-
         greenSquares[numCirc].radius = 0;
         mudar = false;
     }
@@ -178,7 +177,7 @@ async function draw() {
 
         if (consecutiveMisses > 8) {
             document.getElementById("frontDoor").classList.add("locked");
-                document.getElementById("fletcher").src = 'img/angryFletcher.png';
+            document.getElementById("fletcher").src = 'img/angryFletcher.png';
             showFletcherPhrase("expelled");
             fletcherIndex = 1;
             sendUserBackToIntro();
@@ -303,29 +302,6 @@ async function triggerErroAnimation() {
     }
 }
 export function sendUserBackToIntro() {
-    /*console.log(room);
-
-    if (room === "frontDoor") {
-        console.log("Tentativa de sair da sala principal detectada.");
-
-        // Exibir frase de Fletcher antes de permitir sair
-        document.getElementById("quit").classList.remove("hidden");
-
-
-        // Aguarda o clique do jogador antes de permitir a saída
-        document.getElementById("quit").addEventListener("click", () => {
-    document.getElementById("quit").classList.add("hidden");
-
-            finalizeExit();
-        }, { once: true }); // Garante que só executa uma vez
-        return;
-    }
-
-    finalizeExit(); // Sai normalmente se não estiver na sala principal
-}
-
-// Função que realmente finaliza a saída após a mensagem de Fletcher
-function finalizeExit() {*/
     document.getElementById("game").classList.add("hidden");
     document.getElementById("intro").classList.remove("hidden");
     document.getElementById("doorIcon").classList.add("hidden");
@@ -356,7 +332,7 @@ function finalizeExit() {*/
     document.querySelectorAll("#musicSelection button").forEach(btn => btn.disabled = false);
 
     tryPlayMusic("./sound/FletcherClass.wav");
-   // room = "intro";
+    // room = "intro";
 }
 
 export function setInvitationMode(enabled) {
